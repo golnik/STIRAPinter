@@ -1,0 +1,17 @@
+/*Creats the Flex-Boxes for the graphs and sliders locations*/
+
+.box > * {
+    border: 2px solid rgb(209, 223, 11);
+    border-radius: 9px;
+    width: 150px;
+    text-align: center;
+}
+.box {
+    width: 350px;
+    border: 2px dotted rgb(80, 28, 199);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 120px;
+}
+/*Add Comment for Next Part Here*/
