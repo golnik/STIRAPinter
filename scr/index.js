@@ -16,27 +16,54 @@ function making_omegas(t, args){
     // Makes the Deltas that coupls energy level 1&2 and 2&3
     var delta_12 = args.E1 - args.E2 + args.wp;
     var delta_23 = args.E3 - args.E2 + args.ws;
-
+    //var delta = delta_12 = delta_23 
 }
 
 // Creates the System of Equations being used instead of doing Matrix Multiplication
-function System_Equations(){
-    //Manually does the Matrix Multiplication 
-    db_1 = making_omegas.delta_12 * a1 - (making_omegas.Omega_P * a2)/2
-    da_1 = making_omegas.delta_12 * b1 - (making_omegas.Omega_P * b2)/2
+//function System_Equations(d12, d23, Os, Op, t, ts, tp){
+    //db_1 = making_omegas.delta_12 * a1 - (making_omegas.Omega_P * a2)/2
+    //da_1 = making_omegas.delta_12 * b1 - (making_omegas.Omega_P * b2)/2
 
-    db_2 = -(making_omegas.Omega_P * a1)/2 - (making_omegas.Omega_S * a3)/2
-    da_2 = -(making_omegas.Omega_P * b1)/2 - (making_omegas.Omega_S * b3)/2
+    //db_2 = -(making_omegas.Omega_P * a1)/2 - (making_omegas.Omega_S * a3)/2
+    //da_2 = -(making_omegas.Omega_P * b1)/2 - (making_omegas.Omega_S * b3)/2
 
-    db_3 = making_omegas.delta_23 * a3 - (making_omegas.Omega_S * a2)/2
-    da_3 = making_omegas.delta_23 * b3 - (making_omegas.Omega_S * b2)/2
+    //db_3 = making_omegas.delta_23 * a3 - (making_omegas.Omega_S * a2)/2
+    //da_3 = making_omegas.delta_23 * b3 - (making_omegas.Omega_S * b2)/2
 
-}
+    // return   d12 * ts - (Os * tp)/2
+    //          d12 * 
+//}
 
+// Pulse Function
+//      function pulse(t, envelope, w0, ...)
+//          return envelope(t)*Math.sin(w0*t)
+
+// Envolope Function for Pulse
+//      function envolope(t, t0, alpha, as, ap mu)
+//          var exs = Math.exp(alpha*(t-t0))
+//          return  (1/mu)*alpha*(as-ap)*ex/
+//                  ((1+ex*Math.sqrt((1-as+(1-ap)*ex)(as+ap*ex)));
+
+// Gaussian Creation Function
+//      function gaussian(t0, Os, Op, gs, gp, ts, tp, alpha, beta, ss, sp)
+//          return{Pump_Light: Math.sin(alpha) * Math.exp(-(t0-ts)**2/(ss)**2 + Math.sin(beta) * Math.exp(-(t0-tp)**2/(sp)**2)), 
+//
+//                  Stokes_Light: Math.cos(alpha) * Math.exp(-(t0-ts)**2/(ss)**2 + Math.cos(beta) * Math.exp(-(t0-tp)**2/(sp)**2)))
+
+// System of Equation  Functions F(x)
+//      function System(Os, Op, t, delta)6yyvggbxdxdcvgvgvcvggggggggggggggggggggggggggggggggggggbgvvvvvvvvvvvvvvvvvvv   
+\'
+\\\
+
+\
+\\
+\
+
+\                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       N       '
 
 // Creates the constants for the diffrent Gaussians depending on the light being used
 // 0s/p - The strength of the light/Amplitude  ts/p - Distance from center(orgin)   gs/p - Duration of the entire Gaussian(FW@HM)   ws/p - Frequency of the laser 
-function Gaussian_Values(tp){
+function Gaussian_Values(tp, alpha, beta, ll){
     const args = {
         Os: Math.sqrt((5.803548*(10**11)*(4.33**2))/auI),
         ts: 50/fsperau,
