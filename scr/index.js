@@ -3,74 +3,6 @@ const fsperau = (2.488843e-17)/(1.0e-15);
 const auI = 3.50944e16;
 const evperAU = 27.2114079527e0;
 
-// Creates the Varibles to be used in the equations
-function making_omegas(t, args){
-    // Makes Omega_Pump & Omega_Stoke
-    var Omega_P = -args.mu12 * args.Op * (Math.exp(-((t-args.ts)/(args.gs)**2)) * Math.sin(args.alpha) + 
-            Math.exp(-((t-args.tp)/(args.gp)**2)) * Math.sin(args.beta)) * Math.cos(args.wp * t);
-
-
-    var Omega_S = -args.mu12 * args.Op * (Math.exp(-((t-args.ts)/(args.gs)**2)) * Math.cos(args.alpha) + 
-            Math.exp(-((t-args.tp)/(args.gp)**2)) * Math.cos(args.beta)) * Math.cos(args.ws * t);
-
-    // Makes the Deltas that coupls energy level 1&2 and 2&3
-    var delta_12 = args.E1 - args.E2 + args.wp;
-    var delta_23 = args.E3 - args.E2 + args.ws;
-    //var delta = delta_12 = delta_23 
-}
-function population_calculations(alpha, beta, E, ts, tp, t0, tf, gs, gp, delta){
-
-    function OmegaS_cal(t){
-        return (E * Math.sin(alpha) * (Math.exp(-((t0 - ts)**2)/(gs)**2)))
-               + (E * Math.sin(beta) * (Math.exp(-((t0 - tp)**2)/(gp)**2)))
-    }
-
-    function OmegaP_cal(t){
-        return (E * Math.cos(alpha) * (Math.exp(-((t0 - ts)**2)/(gs)**2)))
-               + (E * Math.cos(beta) * (Math.exp(-((t0 - tp)**2)/(gp)**2)))
-    }
-
-    function f(t, x){
-        var x0 = [cos(alpha), 0, 0, 0, sin(alpha), 0]
-        return function F(t0, tf, x, OmegaS_cal, OmegaP_cal, delta){
-            delta * x[1] - (OmegaP_cal * x[3])/2,
-            -(delta * x[0]) + (OmegaP_cal * x[2])/2,
-            -(OmegaP_cal * x[1])/2 - (OmegaS_cal * x[5])/2,
-            (OmegaP_cal * x[0])/2 + (OmegaS_cal * x[4])/2,
-            delta * x[5] - (OmegaS_cal * x[3])/2,
-            -(delta * x[4]) - (OmegaS_cal * x[2])/2
-    }   
-    sol = numeric.dopri(t0, tf, x0, f, 1e-8, 2000)
-    y_line = sol.y
-    time = sol.x
-    }
-}
-
-
-
-
-// Pulse Function
-//      function pulse(t, envelope, w0, ...)
-//          return envelope(t)*Math.sin(w0*t)
-
-// Envolope Function for Pulse
-//      function envolope(t, t0, alpha, as, ap mu)
-//          var exs = Math.exp(alpha*(t-t0))
-//          return  (1/mu)*alpha*(as-ap)*ex/
-//                  ((1+ex*Math.sqrt((1-as+(1-ap)*ex)(as+ap*ex)));
-
-// Gaussian Creation Function
-//      function gaussian(t0, Os, Op, gs, gp, ts, tp, alpha, beta, ss, sp)
-//          return{Pump_Light: Math.sin(alpha) * Math.exp(-(t0-ts)**2/(ss)**2 + Math.sin(beta) * Math.exp(-(t0-tp)**2/(sp)**2)), 
-//
-//                  Stokes_Light: Math.cos(alpha) * Math.exp(-(t0-ts)**2/(ss)**2 + Math.cos(beta) * Math.exp(-(t0-tp)**2/(sp)**2)))
-             
-
-
-
-
-
-
 
 // Creates the constants for the diffrent Gaussians depending on the light being used
 // 0s/p - The strength of the light/Amplitude  ts/p - Distance from center(orgin)   gs/p - Duration of the entire Gaussian(FW@HM)   ws/p - Frequency of the laser 
@@ -98,4 +30,94 @@ function Gaussian_Values(tp, alpha, beta, ll){
     }
     return args
 }
+
+// Creates the two Deltas(Laser Detuning Value), and returns the one delta
+function delta_creation(E1, E2, E3, wp, ws){
+    var delta_12 = E1 - E2 + wp
+    var delta_23 = E3 - E2 + ws
+    var delta = delta_12
+    return delta
+}
+
+// Creates the Gaussion that correlates with Stokes Light
+function Gaussion_Creation_S(t, ts, gs){
+    return Math.exp((-(t-ts))**2/gs**2)
+}
+
+// Creates the Gaussion that correlates with Pump Light
+function Gaussion_Creation_P(t, tp, gp){
+    return Math.exp((-(t-tp))**2/gp**2)
+}
+
+// Calculates the Population transfers acroos the levels
+function population_calculations(t, t0, tf, alpha, beta, E, ts, tp, gs, gp, delta, pulse){
+
+    // Calculates the Omega_S coupler term
+    function OmegaS_cal(t){
+        return E * Math.sin(alpha) * Gaussian_Creation_S(t, ts, gs) +
+               E * Math.sin(beta) * Gaussion_Creation_P(t, tp, gp)
+    }
+    
+    // Calculates the Omega_P coupler term
+    function OmegaP_cal(t){
+        return E * Math.cos(alpha) * Gaussian_Creation_S(t, ts, gs) +
+               E * Math.cos(beta) * Gaussion_Creation_P(t, tp, gp)
+    }
+
+    // Creates the System of Equations for the Matrix Multiplication by the WaveForm
+    function F(t0, tf, x, OmegaS, OmegaP, delta){
+        return[
+        delta * x[1] - (OmegaP * x[3])/2,
+        -(delta * x[0]) + (OmegaP * x[2])/2,
+        -(OmegaP * x[1])/2 - (OmegaS * x[5])/2,
+        (OmegaP * x[0])/2 + (OmegaS * x[4])/2,
+        delta * x[5] - (OmegaS * x[3])/2,
+        -(delta * x[4]) - (OmegaS * x[2])/2 
+        ]
+    }
+
+    function f(t, x){
+        var x0 = [cos(alpha), 0, 0, 0, sin(alpha), 0]
+        return F(t0, tf, x, OmegaS_cal(t), OmegaP_cal(t), delta)
+            
+    }   
+    sol = numeric.dopri(t0, tf, x0, f, 1e-8, 2000)
+    y_line = sol.y
+    time = sol.x
+}
+/*
+Pulse Function
+      function pulse(t, envelope, w0, ...)
+          return envelope(t)*Math.sin(w0*t)
+
+ Envolope Function for Pulse
+      function envolope(t, t0, alpha, as, ap mu)
+          var exs = Math.exp(alpha*(t-t0))
+          return  (1/mu)*alpha*(as-ap)*exs/
+                  ((1+ex*Math.sqrt((1-as+(1-ap)*ex)(as+ap*ex)));
+
+Gaussian Creation Function
+function gaussian(t0, Os, Op, gs, gp, ts, tp, alpha, beta, ss, sp){
+    return {
+        Pump_Light: (Math.cos(alpha) * (Math.exp(-((t0 - ts)**2)/(gs)**2))),
+        Stokes_Light: (Math.sin(beta) * (Math.exp(-((t0 - tp)**2)/(gp)**2)))
+
+    };
+}  
+
+
+ Creates the Varibles to be used in the equations
+function making_omegas(t, args){
+     Makes Omega_Pump & Omega_Stoke
+    var Omega_P = -args.mu12 * args.Op * (Math.exp(-((t-args.ts)/(args.gs)**2)) * Math.sin(args.alpha) + 
+            Math.exp(-((t-args.tp)/(args.gp)**2)) * Math.sin(args.beta)) * Math.cos(args.wp * t);
+
+
+    var Omega_S = -args.mu12 * args.Op * (Math.exp(-((t-args.ts)/(args.gs)**2)) * Math.cos(args.alpha) + 
+            Math.exp(-((t-args.tp)/(args.gp)**2)) * Math.cos(args.beta)) * Math.cos(args.ws * t);
+
+     Makes the Deltas that coupls energy level 1&2 and 2&3
+     
+}/*
+
 
