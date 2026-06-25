@@ -1,7 +1,7 @@
 //Convertion of units from SI to atomic units
-const fsperau = (2.488843*(10**-17))/(1.0*(10**-15));
-const auI = 3.50944*(10**16);
-const evperAU = 27.2114079527*(10**0);
+const fsperau = (2.488843e-17)/(1.0e-15);
+const auI = 3.50944e16;
+const evperAU = 27.2114079527e0;
 
 // Creates the Varibles to be used in the equations
 function making_omegas(t, args){
@@ -18,21 +18,36 @@ function making_omegas(t, args){
     var delta_23 = args.E3 - args.E2 + args.ws;
     //var delta = delta_12 = delta_23 
 }
+function population_calculations(alpha, beta, E, ts, tp, t0, tf, gs, gp, delta){
 
-// Creates the System of Equations being used instead of doing Matrix Multiplication
-//function System_Equations(d12, d23, Os, Op, t, ts, tp){
-    //db_1 = making_omegas.delta_12 * a1 - (making_omegas.Omega_P * a2)/2
-    //da_1 = making_omegas.delta_12 * b1 - (making_omegas.Omega_P * b2)/2
+    function OmegaS_cal(t){
+        return (E * Math.sin(alpha) * (Math.exp(-((t0 - ts)**2)/(gs)**2)))
+               + (E * Math.sin(beta) * (Math.exp(-((t0 - tp)**2)/(gp)**2)))
+    }
 
-    //db_2 = -(making_omegas.Omega_P * a1)/2 - (making_omegas.Omega_S * a3)/2
-    //da_2 = -(making_omegas.Omega_P * b1)/2 - (making_omegas.Omega_S * b3)/2
+    function OmegaP_cal(t){
+        return (E * Math.cos(alpha) * (Math.exp(-((t0 - ts)**2)/(gs)**2)))
+               + (E * Math.cos(beta) * (Math.exp(-((t0 - tp)**2)/(gp)**2)))
+    }
 
-    //db_3 = making_omegas.delta_23 * a3 - (making_omegas.Omega_S * a2)/2
-    //da_3 = making_omegas.delta_23 * b3 - (making_omegas.Omega_S * b2)/2
+    function f(t, x){
+        var x0 = [cos(alpha), 0, 0, 0, sin(alpha), 0]
+        return function F(t0, tf, x, OmegaS_cal, OmegaP_cal, delta){
+            delta * x[1] - (OmegaP_cal * x[3])/2,
+            -(delta * x[0]) + (OmegaP_cal * x[2])/2,
+            -(OmegaP_cal * x[1])/2 - (OmegaS_cal * x[5])/2,
+            (OmegaP_cal * x[0])/2 + (OmegaS_cal * x[4])/2,
+            delta * x[5] - (OmegaS_cal * x[3])/2,
+            -(delta * x[4]) - (OmegaS_cal * x[2])/2
+    }   
+    sol = numeric.dopri(t0, tf, x0, f, 1e-8, 2000)
+    y_line = sol.y
+    time = sol.x
+    }
+}
 
-    // return   d12 * ts - (Os * tp)/2
-    //          d12 * 
-//}
+
+
 
 // Pulse Function
 //      function pulse(t, envelope, w0, ...)
@@ -49,17 +64,13 @@ function making_omegas(t, args){
 //          return{Pump_Light: Math.sin(alpha) * Math.exp(-(t0-ts)**2/(ss)**2 + Math.sin(beta) * Math.exp(-(t0-tp)**2/(sp)**2)), 
 //
 //                  Stokes_Light: Math.cos(alpha) * Math.exp(-(t0-ts)**2/(ss)**2 + Math.cos(beta) * Math.exp(-(t0-tp)**2/(sp)**2)))
+             
 
-// System of Equation  Functions F(x)
-//      function System(Os, Op, t, delta)6yyvggbxdxdcvgvgvcvggggggggggggggggggggggggggggggggggggbgvvvvvvvvvvvvvvvvvvv   
-\'
-\\\
 
-\
-\\
-\
 
-\                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       N       '
+
+
+
 
 // Creates the constants for the diffrent Gaussians depending on the light being used
 // 0s/p - The strength of the light/Amplitude  ts/p - Distance from center(orgin)   gs/p - Duration of the entire Gaussian(FW@HM)   ws/p - Frequency of the laser 
