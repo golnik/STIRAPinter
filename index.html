@@ -5,28 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>STIRAP Interactive Project</title>
     <link rel="stylesheet" href="scr/styles.css">
-    <script src="https://cdn.plot.ly/plotly-3.6.0.min.js" charset="uft-8"></script><!--Imports a graphing library-->
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!--<script src="https://cdn.plot.ly/plotly-3.6.0.min.js" charset="uft-8"></script>--><!--Imports a graphing library-->
+    <!--<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js"></script><!--Imports a Javascript mathmatical library-->
 </head>
 
 
 <body>
-    
     <div class="box">
-        <input type="range"/>
-            <br> Graph 1
+        <div>
+            <h1>
+                 Intial Start Time(t0)
+            </h1>
+            <input type="number" id="time0" step="1", min="0", max="100" placeholder="Enter">
         </div>
-        <div> Slider 2 
-            <br> Graph 2
+        <div>
+            <h1>
+                 Final Time(tf)
+            </h1>
+            <input type="number" id="timef" step="1", min="0", max="100" placeholder="Enter">
         </div>
-        <div> Slider 3 
-            <br> Graph 3
+        <div>
+            <h1>
+                 Position away from orgin(tp)
+            </h1>
+            <input type="number" id="tp" step=".01", min="0", max="100" placeholder="Enter">
         </div>
+        <div>
+            <h1>
+                 Alpha(α)
+            </h1>
+            <input type="number" id="alpha" step="1", min="0", max="100" placeholder="Enter">
+        </div>
+        <div>
+            <h1>
+                 Beta(β)
+            </h1>
+            <input type="number" id="beta" step="1", min="0", max="100" placeholder="Enter">
+        </div>
+    </div> 
     
-    </div>
+    <script src="scr/numeric.js"></script>
     <script src="scr/index.js"></script>
-
-    
 </body>
-</html>
+</html> 

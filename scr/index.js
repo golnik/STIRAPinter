@@ -3,10 +3,17 @@ const fsperau = (2.488843e-17)/(1.0e-15);
 const auI = 3.50944e16;
 const evperAU = 27.2114079527e0;
 
+// Gets the Users Input Values
+const time0 = document.getElementById("time0").value;
+const timef = document.getElementById("timef").value;
+const tp = document.getElementById("tp").value;
+const alpha = document.getElementById("alpha").value;
+const beta = document.getElementById("beta").value;
+
 
 // Creates the constants for the diffrent Gaussians depending on the light being used
 // 0s/p - The strength of the light/Amplitude  ts/p - Distance from center(orgin)   gs/p - Duration of the entire Gaussian(FW@HM)   ws/p - Frequency of the laser 
-function Gaussian_Values(tp, alpha, beta, ll){
+function Gaussian_Values(tp, alpha, beta){
     const args = {
         Os: Math.sqrt((5.803548*(10**11)*(4.33**2))/auI),
         ts: 50/fsperau,
@@ -25,12 +32,14 @@ function Gaussian_Values(tp, alpha, beta, ll){
         mu12: 1,
         mu23: -1 * 1,
 
-        alpha: 1/3 * Math.PI,
-        beta: 1/4 * Math.PI,
+        alpha: alpha * Math.PI,
+        beta: beta * Math.PI,
     }
     return args
 }
-
+var test = Gaussian_Values(tp, alpha, beta);
+var test2 = Gaussion_Creation_S(time0, test.ts, test.gs);
+console.log(`Test2: ${test2}`);
 // Creates the two Deltas(Laser Detuning Value), and returns the one delta
 function delta_creation(E1, E2, E3, wp, ws){
     var delta_12 = E1 - E2 + wp
@@ -77,14 +86,17 @@ function population_calculations(t, t0, tf, alpha, beta, E, ts, tp, gs, gp, delt
     }
 
     function f(t, x){
-        var x0 = [cos(alpha), 0, 0, 0, sin(alpha), 0]
+        
         return F(t0, tf, x, OmegaS_cal(t), OmegaP_cal(t), delta)
             
     }   
+    var x0 = [cos(alpha), 0, 0, 0, sin(alpha), 0]
     sol = numeric.dopri(t0, tf, x0, f, 1e-8, 2000)
     y_line = sol.y
     time = sol.x
 }
+
+
 /*
 Pulse Function
       function pulse(t, envelope, w0, ...)
@@ -118,6 +130,7 @@ function making_omegas(t, args){
 
      Makes the Deltas that coupls energy level 1&2 and 2&3
      
-}/*
+}
+*/
 
 
