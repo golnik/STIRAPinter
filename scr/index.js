@@ -3,13 +3,22 @@ const fsperau = (2.488843e-17)/(1.0e-15);
 const auI = 3.50944e16;
 const evperAU = 27.2114079527e0;
 
-// Gets the Users Input Values
-const time0 = document.getElementById("time0").value;
-const timef = document.getElementById("timef").value;
-const tp = document.getElementById("tp").value;
-const alpha = document.getElementById("alpha").value;
-const beta = document.getElementById("beta").value;
+// Gets the Users Input Values & Puts them into the certain functions that need those parameters/values
+document.getElementById("calculate").onclick = function d(){
+    const time0 = document.getElementById("time0").value;
+    const timef = document.getElementById("timef").value;
+    const tp = document.getElementById("tp").value;
+    const alpha = document.getElementById("alpha").value;
+    const beta = document.getElementById("beta").value;
 
+    var test = Gaussian_Values(tp, alpha, beta);
+    var GCP = Gaussion_Creation_P(time0, test.tp, test.gp);
+    var GCS = Gaussion_Creation_S(time0, test.ts, test.gs);
+    var Delta = delta_creation(test.E1, test.E2, test.E3, test.wp, test.ws);
+    console.log(`GCP: ${GCP}, GCS: ${GCS}, Delta: ${Delta}`)
+}
+
+// Ensures the user input values are valid
 
 // Creates the constants for the diffrent Gaussians depending on the light being used
 // 0s/p - The strength of the light/Amplitude  ts/p - Distance from center(orgin)   gs/p - Duration of the entire Gaussian(FW@HM)   ws/p - Frequency of the laser 
@@ -37,9 +46,19 @@ function Gaussian_Values(tp, alpha, beta){
     }
     return args
 }
-var test = Gaussian_Values(tp, alpha, beta);
-var test2 = Gaussion_Creation_S(time0, test.ts, test.gs);
-console.log(`Test2: ${test2}`);
+
+// Creates the Envelope Function for the Pulse
+function envelope(t, t0, alpha, as, ap, mu){
+    var exs = Math.exp(alpha*(t-t0))
+    return  (1/mu)*alpha*(as-ap)*exs/
+            ((1+exs)*Math.sqrt((1-as+(1-ap)*exs)*(as+ap*exs)));
+}
+
+// Create the Pulse Function
+function pulse(t, envelope, w0){
+    return envelope(t)*Math.sin(w0*t)
+}
+
 // Creates the two Deltas(Laser Detuning Value), and returns the one delta
 function delta_creation(E1, E2, E3, wp, ws){
     var delta_12 = E1 - E2 + wp
@@ -90,47 +109,28 @@ function population_calculations(t, t0, tf, alpha, beta, E, ts, tp, gs, gp, delt
         return F(t0, tf, x, OmegaS_cal(t), OmegaP_cal(t), delta)
             
     }   
-    var x0 = [cos(alpha), 0, 0, 0, sin(alpha), 0]
-    sol = numeric.dopri(t0, tf, x0, f, 1e-8, 2000)
+    var x0 = [Math.cos(alpha), 0, 0, 0, Math.sin(alpha), 0]
+    var sol = numeric.dopri(t0, tf, x0, f, 1e-8, 2000)
+    console.log(x0)
     y_line = sol.y
     time = sol.x
+    //Make it print arrays and Time dependant
+    //Next Step is to extract the time and the 6 dimensional table
 }
 
 
 /*
-Pulse Function
-      function pulse(t, envelope, w0, ...)
-          return envelope(t)*Math.sin(w0*t)
-
- Envolope Function for Pulse
-      function envolope(t, t0, alpha, as, ap mu)
-          var exs = Math.exp(alpha*(t-t0))
-          return  (1/mu)*alpha*(as-ap)*exs/
-                  ((1+ex*Math.sqrt((1-as+(1-ap)*ex)(as+ap*ex)));
-
-Gaussian Creation Function
-function gaussian(t0, Os, Op, gs, gp, ts, tp, alpha, beta, ss, sp){
-    return {
-        Pump_Light: (Math.cos(alpha) * (Math.exp(-((t0 - ts)**2)/(gs)**2))),
-        Stokes_Light: (Math.sin(beta) * (Math.exp(-((t0 - tp)**2)/(gp)**2)))
-
-    };
-}  
-
-
  Creates the Varibles to be used in the equations
 function making_omegas(t, args){
      Makes Omega_Pump & Omega_Stoke
     var Omega_P = -args.mu12 * args.Op * (Math.exp(-((t-args.ts)/(args.gs)**2)) * Math.sin(args.alpha) + 
             Math.exp(-((t-args.tp)/(args.gp)**2)) * Math.sin(args.beta)) * Math.cos(args.wp * t);
-
+ 
 
     var Omega_S = -args.mu12 * args.Op * (Math.exp(-((t-args.ts)/(args.gs)**2)) * Math.cos(args.alpha) + 
             Math.exp(-((t-args.tp)/(args.gp)**2)) * Math.cos(args.beta)) * Math.cos(args.ws * t);
-
-     Makes the Deltas that coupls energy level 1&2 and 2&3
      
-}
 */
+ 
 
-
+population_calculations(tp, time0, timef, Gaussian_Values('alpha'), Gaussian_Values('beta'), 0, Gaussian_Values('ts'), Gaussian_Values('tp'), Gaussian_Values('gs'), Gaussian_Values('gp'), delta_creation(0, 0, 0, 0, 0))

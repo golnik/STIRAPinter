@@ -15,36 +15,28 @@
     <div class="box">
         <div>
             <h1>
-                 Intial Start Time(t0)
+                 Time Parameters
             </h1>
-            <input type="number" id="time0" step="1", min="0", max="100" placeholder="Enter">
+            <input type="number" id="time0" step="1", min="0", max="100" placeholder="t0", value="0"><p> Initial Time (t0)</p>
+            <input type="number" id="timef" step="1", min="0", max="100" placeholder="tf", value="60"><p> Final Time (tf)</p>
         </div>
         <div>
             <h1>
-                 Final Time(tf)
+                 Position Parameters
             </h1>
-            <input type="number" id="timef" step="1", min="0", max="100" placeholder="Enter">
+            <input type="number" id="tp" step="1", min="0", max="100" placeholder="tp", value="20"><p> Position (tp)</p>
         </div>
         <div>
             <h1>
-                 Position away from orgin(tp)
+                 Angle Parameters In Radians
             </h1>
-            <input type="number" id="tp" step=".01", min="0", max="100" placeholder="Enter">
-        </div>
-        <div>
-            <h1>
-                 Alpha(α)
-            </h1>
-            <input type="number" id="alpha" step="1", min="0", max="100" placeholder="Enter">
-        </div>
-        <div>
-            <h1>
-                 Beta(β)
-            </h1>
-            <input type="number" id="beta" step="1", min="0", max="100" placeholder="Enter">
-        </div>
+            <input type="range" id="beta", min="0", max="6.28318530718" placeholder="Enter", value=".2"> <p> Alpha(α)</p>
+            <input type="range" id="alpha", min="0", max="6.28318530718" placeholder="Enter", value=".33"><p> Beta(β)</p>
+        </div>   
     </div> 
-    
+
+    <button id="calculate">Calculate</button>
+
     <script src="scr/numeric.js"></script>
     <script src="scr/index.js"></script>
 </body>
