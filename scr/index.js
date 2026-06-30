@@ -3,26 +3,84 @@ const fsperau = (2.488843e-17)/(1.0e-15);
 const auI = 3.50944e16;
 const evperAU = 27.2114079527e0;
 
-// Gets the Users Input Values & Puts them into the certain functions that need those parameters/values
+// Gets the Users Input Values & Treats them as floats
 document.getElementById("calculate").onclick = function d(){
-    const time0 = document.getElementById("time0").value;
-    const timef = document.getElementById("timef").value;
-    const tp = document.getElementById("tp").value;
-    const alpha = document.getElementById("alpha").value;
-    const beta = document.getElementById("beta").value;
+    const time0 = parseFloat(document.getElementById("time0").value);
+    const timef = parseFloat(document.getElementById("timef").value);
+    const tp_inp = parseFloat(document.getElementById("tp").value);
+    const alph = parseFloat(document.getElementById("alpha").value);
+    const bet = parseFloat(document.getElementById("beta").value);
 
-    var test = Gaussian_Values(tp, alpha, beta);
-    var GCP = Gaussion_Creation_P(time0, test.tp, test.gp);
-    var GCS = Gaussion_Creation_S(time0, test.ts, test.gs);
+    var test = Gaussion_Values(tp_inp, alph, bet);
     var Delta = delta_creation(test.E1, test.E2, test.E3, test.wp, test.ws);
-    console.log(`GCP: ${GCP}, GCS: ${GCS}, Delta: ${Delta}`)
+
+    const tp = test.tp;
+    const alpha = test.alpha;
+    const beta = test.beta;
+    var Delta = delta_creation(test.E1, test.E2, test.E3, test.wp, test.ws);
+    const time_initial = time0;
+    const time_final = timef;
+      
+    // First Shot at Graphing the Pulses and Envolope Functions
+    
+    const t_values = [];
+    const envope_values = [];
+    const pulse_values = [];
+    const steps = 2000
+    const dt = (time_final - time_initial)/steps;
+    const w0 = test.ws;
+    const test_as = .8
+    const test_ap = .2
+    const test_mu = 1
+
+// The problem lies in the math for as & ap, so look back at the Gaussian_Values math!
+
+    for (let i = 0; i<= steps; i++){
+        const t = time_initial + i*dt
+        t_values.push(t)
+
+        const t0_center = (time_initial + time_final)/2
+
+        const env = envelope(t, t0_center, alpha, test_as, test_ap, test_mu)
+        envope_values.push(env)
+
+        const pul = env *Math.sin(5*t)
+        pulse_values.push(pul)
+    }
+
+    const traceEnvolpe = {
+        x: t_values,
+        y: envope_values,
+        mode: 'lines',
+        name: 'Envelope Function',
+        line: {color: 'blue', width: 2}
+    };
+
+    const tracePulse = {
+        x: t_values,
+        y: pulse_values,
+        mode: 'lines',
+        name: 'Pulse Function',
+        line: {color: 'red', width: 1.5}
+    };
+
+    const layot = {
+        title: 'Envelope and Pulse Functions',
+        xaxis: {title: 'Time (fs)'},
+        yaxis: {title: 'Amplitude'},
+        template: 'plotly_dark',
+        showlegend: true
+    };
+    Plotly.newPlot('plot', [traceEnvolpe, tracePulse], layot);
+
 }
+
 
 // Ensures the user input values are valid
 
 // Creates the constants for the diffrent Gaussians depending on the light being used
 // 0s/p - The strength of the light/Amplitude  ts/p - Distance from center(orgin)   gs/p - Duration of the entire Gaussian(FW@HM)   ws/p - Frequency of the laser 
-function Gaussian_Values(tp, alpha, beta){
+function Gaussion_Values(tp, alpha, beta){
     const args = {
         Os: Math.sqrt((5.803548*(10**11)*(4.33**2))/auI),
         ts: 50/fsperau,
@@ -55,7 +113,7 @@ function envelope(t, t0, alpha, as, ap, mu){
 }
 
 // Create the Pulse Function
-function pulse(t, envelope, w0){
+function pulse(t, w0){
     return envelope(t)*Math.sin(w0*t)
 }
 
@@ -78,19 +136,23 @@ function Gaussion_Creation_P(t, tp, gp){
 }
 
 // Calculates the Population transfers acroos the levels
-function population_calculations(t, t0, tf, alpha, beta, E, ts, tp, gs, gp, delta, pulse){
+function population_calculations(t, t0, tf, alpha, beta, E, ts, tp, gs, gp, delta){
+
+    console.log(`t0: ${t0}, tf: ${tf}, alpha: ${alpha}, beta: ${beta}, E: ${E}, ts: ${ts}, tp: ${tp}, gs: ${gs}, gp: ${gp}, delta: ${delta}`)
 
     // Calculates the Omega_S coupler term
     function OmegaS_cal(t){
-        return E * Math.sin(alpha) * Gaussian_Creation_S(t, ts, gs) +
+        return E * Math.sin(alpha) * Gaussion_Creation_S(t, ts, gs) +
                E * Math.sin(beta) * Gaussion_Creation_P(t, tp, gp)
     }
+    console.log(`OmegaS: ${OmegaS_cal(t)}`)
     
     // Calculates the Omega_P coupler term
     function OmegaP_cal(t){
-        return E * Math.cos(alpha) * Gaussian_Creation_S(t, ts, gs) +
+        return E * Math.cos(alpha) * Gaussion_Creation_S(t, ts, gs) +
                E * Math.cos(beta) * Gaussion_Creation_P(t, tp, gp)
     }
+    console.log(`OmegaP: ${OmegaP_cal(t)}`)
 
     // Creates the System of Equations for the Matrix Multiplication by the WaveForm
     function F(t0, tf, x, OmegaS, OmegaP, delta){
@@ -103,34 +165,24 @@ function population_calculations(t, t0, tf, alpha, beta, E, ts, tp, gs, gp, delt
         -(delta * x[4]) - (OmegaS * x[2])/2 
         ]
     }
+    //console.log(`F: ${F(t0, tf, [Math.cos(alpha), 0, 0, 0, Math.sin(alpha), 0], OmegaS_cal(t), OmegaP_cal(t), delta)}`)
 
     function f(t, x){
         
         return F(t0, tf, x, OmegaS_cal(t), OmegaP_cal(t), delta)
             
-    }   
+    }
+    //console.log(`f: ${f(t, [Math.cos(alpha), 0, 0, 0, Math.sin(alpha), 0])}`)   
     var x0 = [Math.cos(alpha), 0, 0, 0, Math.sin(alpha), 0]
     var sol = numeric.dopri(t0, tf, x0, f, 1e-8, 2000)
-    console.log(x0)
+    //console.log(x0)
+    //console.log(sol)
     y_line = sol.y
     time = sol.x
+    //console.log(`time: ${time}`)
+    //console.log(`y_line: ${y_line}`)
+
     //Make it print arrays and Time dependant
     //Next Step is to extract the time and the 6 dimensional table
 }
 
-
-/*
- Creates the Varibles to be used in the equations
-function making_omegas(t, args){
-     Makes Omega_Pump & Omega_Stoke
-    var Omega_P = -args.mu12 * args.Op * (Math.exp(-((t-args.ts)/(args.gs)**2)) * Math.sin(args.alpha) + 
-            Math.exp(-((t-args.tp)/(args.gp)**2)) * Math.sin(args.beta)) * Math.cos(args.wp * t);
- 
-
-    var Omega_S = -args.mu12 * args.Op * (Math.exp(-((t-args.ts)/(args.gs)**2)) * Math.cos(args.alpha) + 
-            Math.exp(-((t-args.tp)/(args.gp)**2)) * Math.cos(args.beta)) * Math.cos(args.ws * t);
-     
-*/
- 
-
-population_calculations(tp, time0, timef, Gaussian_Values('alpha'), Gaussian_Values('beta'), 0, Gaussian_Values('ts'), Gaussian_Values('tp'), Gaussian_Values('gs'), Gaussian_Values('gp'), delta_creation(0, 0, 0, 0, 0))

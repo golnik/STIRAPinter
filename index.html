@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>STIRAP Interactive Project</title>
     <link rel="stylesheet" href="scr/styles.css">
-    <!--<script src="https://cdn.plot.ly/plotly-3.6.0.min.js" charset="uft-8"></script>--><!--Imports a graphing library-->
+    <script src="https://cdn.plot.ly/plotly-3.6.0.min.js" charset="utf-8"></script>
     <!--<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>-->
+    <script src="https://cdn.plot.ly/plotly-3.3.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js"></script><!--Imports a Javascript mathmatical library-->
 </head>
 
@@ -17,8 +18,8 @@
             <h1>
                  Time Parameters
             </h1>
-            <input type="number" id="time0" step="1", min="0", max="100" placeholder="t0", value="0"><p> Initial Time (t0)</p>
-            <input type="number" id="timef" step="1", min="0", max="100" placeholder="tf", value="60"><p> Final Time (tf)</p>
+            <input type="number" id="time0" step="1", min="-10", max="100" placeholder="t0", value="0"><p> Initial Time (t0)</p>
+            <input type="number" id="timef" step="1", min="-10", max="100" placeholder="tf", value="60"><p> Final Time (tf)</p>
         </div>
         <div>
             <h1>
@@ -30,12 +31,13 @@
             <h1>
                  Angle Parameters In Radians
             </h1>
-            <input type="range" id="beta", min="0", max="6.28318530718" placeholder="Enter", value=".2"> <p> Alpha(α)</p>
-            <input type="range" id="alpha", min="0", max="6.28318530718" placeholder="Enter", value=".33"><p> Beta(β)</p>
-        </div>   
+            <input type="number" id="beta", step="0.1", min="0", max="6.28318530718" placeholder="Enter", value=".2"> <p> Alpha(α)</p>
+            <input type="number" id="alpha", step="0.1", min="0", max="6.28318530718" placeholder="Enter", value=".33"><p> Beta(β)</p>
+        </div>
     </div> 
 
     <button id="calculate">Calculate</button>
+    <div id = 'plot' style="width:100%; max-width:1000px; height:500px;"></div>
 
     <script src="scr/numeric.js"></script>
     <script src="scr/index.js"></script>
