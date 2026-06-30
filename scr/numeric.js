@@ -2902,7 +2902,7 @@ numeric.dopri = function dopri(x0,x1,y0,f,tol,maxit,event) {
     var c = [1/5,3/10,4/5,8/9,1,1];
     var e = [-71/57600,0,71/16695,-71/1920,17253/339200,-22/525,1/40];
     var i = 0,er,j;
-    var h = (x1-x0)/10;
+    var h = (x1-x0)/(maxit);
     var it = 0;
     var add = numeric.add, mul = numeric.mul, y1,erinf;
     var max = Math.max, min = Math.min, abs = Math.abs, norminf = numeric.norminf,pow = Math.pow;
@@ -2911,6 +2911,7 @@ numeric.dopri = function dopri(x0,x1,y0,f,tol,maxit,event) {
     var ret = new numeric.Dopri(xs,ys,k1,ymid,-1,"");
     if(typeof event === "function") e0 = event(x0,y0);
     while(x0<x1 && it<maxit) {
+        console.log("x0: ", x0, "h: ", h, "it: ", it);
         ++it;
         if(x0+h>x1) h = x1-x0;
         k2 = f(x0+c[0]*h,                add(y0,mul(   A2*h,k1[i])));
