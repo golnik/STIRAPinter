@@ -25,7 +25,7 @@
             <h1>
                  Position Parameters
             </h1>
-            <input type="number" id="t_p" step="1", min="0", max="100" placeholder="tp", value="2"><p> Position (tp)</p>
+            <input type="number" id="t_p" step="1", min="0", max="100" placeholder="tp", value="3"><p> Position (tp)</p>
             <input type="number" id="t_s" step="1", min="0", max="100" placeholder="ts", value="3"><p> Position (ts)</p>
         </div>
         <div>
@@ -34,13 +34,14 @@
             </h1>
 
             <!-- Figure out way to display numbers with the sliders -->
-            <input type="number" id="alpha", step="0.1", min="0", max="6.28318530718" placeholder="Enter", value=".5"> <p> Alpha(α)</p>
-            <input type="number" id="beta", step="0.1", min="0", max="6.28318530718" placeholder="Enter", value=".5"><p> Beta(β)</p>
+            <input type="number" id="alpha", step="0.1", min="0", max="6.28318530718" placeholder="Enter", value=".25"> <p> Alpha(α)</p>
+            <input type="number" id="beta", step="0.1", min="0", max="6.28318530718" placeholder="Enter", value=".25"><p> Beta(β)</p>
         </div>
     </div> 
 
     <button id="calculate">Calculate</button>
     <div id = 'plot' style="width:100%; max-width:1000px; height:500px;"></div>
+    <div id = 'plotII' style="width:100%; max-width:1000px; height:500px;"></div>
 
     <script src="scr/numeric.js"></script>
     <script src="scr/index.js"></script>
