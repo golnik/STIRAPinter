@@ -1472,7 +1472,7 @@ Complex['INFINITY'] = new Complex(Infinity, Infinity);
 Complex['NAN'] = new Complex(NaN, NaN);
 Complex['EPSILON'] = 1e-15;
 
-Object.defineProperty(Complex, "__esModule", { 'value': true });
-Complex['default'] = Complex;
-Complex['Complex'] = Complex;
-module['exports'] = Complex;
+//Object.defineProperty(Complex, "__esModule", { 'value': true });
+//Complex['default'] = Complex;
+//Complex['Complex'] = Complex;
+//module['exports'] = Complex;

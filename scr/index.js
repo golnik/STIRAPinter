@@ -199,6 +199,26 @@ function population_calculations_NRW(test){
             
     }
 
+    function f_complex(t, x){
+        var OmegaS = (test.Os * test.mu23) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.cos(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.cos(test.beta))
+        var OmegaP = (test.Op * test.mu12) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.sin(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.sin(test.beta))
+        
+        var delta_12 = test.E1 - test.E2 + test.wp
+        var delta_23 = test.E3 - test.E2 + test.ws
+
+        console.log(delta_12)
+        console.log(delta_23)
+
+        var negI = new Complex(0., -1.)
+
+        var dx = [
+            cAdd(cScale(x[0], delta_12), cScale(x[1], -OmegaP/2)),
+            cAdd(cScale(x[0], -OmegaP/2), cScale(x[2], -OmegaS/2)),
+            cAdd(cScale(x[1], -OmegaS/2), cScale(x[2], delta_23))
+        ]
+
+        return cScale(dx, negI)
+    }
     
     var x0 = [Math.cos(test.alpha), 0, 0, 0, Math.sin(test.alpha), 0]
 
@@ -207,6 +227,18 @@ function population_calculations_NRW(test){
     y_line = sol.y
     time = sol.x
     y_ret = numeric.transpose(y_line)
+
+    // solution using complex ODE integrator
+    var x0_complex = [new Complex(Math.cos(test.alpha),0.), new Complex(0), new Complex(Math.sin(test.alpha))]
+    //var sol_complex = numeric.rk4Complex(test.t0, test.tf, x0_complex, f_complex, 1000)    
+    var sol_complex = numeric.dopriComplex(test.t0, test.tf, x0_complex, f_complex, 1e-8, 100000)
+
+    // just to mimic the previous solution, we convert back to re/im array
+    time = sol_complex.x
+    y_line = sol_complex.y.map(function(row){
+        return [row[0].re, row[0].im, row[1].re, row[1].im, row[2].re, row[2].im]
+    })
+
     return [time, numeric.transpose(y_line)]
 }
 
@@ -235,7 +267,6 @@ function population_calculations(test){
             
     }
 
-    
     var x0 = [Math.cos(test.alpha), 0, 0, 0, Math.sin(test.alpha), 0]
 
     // Uses the dopri function to get the final values for the populations, and returns these values
