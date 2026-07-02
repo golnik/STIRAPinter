@@ -33,6 +33,9 @@ document.getElementById("calculate").onclick = function d(){
     const envope_values_p = [];
     const envope_values_s = [];
     const steps = 2000
+    const angle_va = []
+    const beta_va = []
+    const alpha_va = []
 
     const dt = (test.tf - test.t0)/steps;
 
@@ -41,12 +44,17 @@ document.getElementById("calculate").onclick = function d(){
         const t = test.t0 + i*dt
         t_values.push(t*fsperau)
 
-        const envelop_p = (test.Op * test.mu12) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.sin(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.sin(test.beta)) * Math.cos(test.wp * t)
+        var envelop_p = (test.Op * test.mu12) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.sin(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.sin(test.beta)) 
+        envope_values_p.push(envelop_p * Math.cos(test.wp * t))
 
-        envope_values_p.push(envelop_p)
+        var envelop_s = (test.Os * test.mu23) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.cos(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.cos(test.beta)) 
+        envope_values_s.push(envelop_s * Math.cos(test.ws * t))
 
-        const envelop_s = (test.Os * test.mu23) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.cos(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.cos(test.beta)) * Math.cos(test.ws * t)
-        envope_values_s.push(envelop_s)
+        angle_va.push(Math.atan(-envelop_p/envelop_s)/Math.PI)
+
+        beta_va.push(bet)
+
+        alpha_va.push(alph)
     }
 
     // Creates the two axis values for the pupms & graphs them
@@ -66,13 +74,46 @@ document.getElementById("calculate").onclick = function d(){
         line: {color: 'red', width: 1.5}
     }
 
+    const angles = {
+        x: t_values,
+        y: angle_va,
+        name: 'Angle',
+        mode: 'lines',
+        line: {color: 'green', width: 1.5}
+    }
+
+    const Beta_Line = {
+        x: t_values,
+        y: beta_va,
+        name: 'Beta',
+        mode: 'lines',
+        line: {color: 'red', width: 1.5}
+    }
+
+    const Alpha_Line = {
+        x: t_values,
+        y: alpha_va,
+        name: 'Alpha',
+        mode: 'lines',
+        line: {color: 'blue', width: 1.5}
+    }
     const layout = {
         title: 'Envelope and Pulse Functions',
         xaxis: {title: 'Time (fs)'},
         yaxis: {title: 'Amplitude'},
+        showlegend: true 
+        };  
+        
+    
+    const layoutIII = {
+        title: 'Angle',
+        xaxis: {title: 'Time (fs)'},
+        yaxis: {title: 'Angle (rad)', range: [-1/2, 1/2]},
         showlegend: true
-        };   
+        };
+
     Plotly.newPlot('plot', [Gau_p, Gau_s], layout); 
+    Plotly.newPlot('plotIII', [angles, Beta_Line, Alpha_Line], layoutIII);
 
     res = population_calculations_NRW(test);
 
@@ -110,7 +151,12 @@ document.getElementById("calculate").onclick = function d(){
 
     Plotly.newPlot('plotII', [C1, C3], layoutII);
 
-}
+    const angle = []
+    const time_values = []
+
+   
+} 
+
 // Creates the constants for the diffrent Gaussians depending on the light being used
 // 0s/p - The strength of the light/Amplitude  ts/p - Distance from center(orgin)   gs/p - Duration of the entire Gaussian(FW@HM)   ws/p - Frequency of the laser 
 function Gaussion_Values(tp, ts, alpha, beta){
