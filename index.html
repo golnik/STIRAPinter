@@ -6,43 +6,67 @@
     <title>STIRAP Interactive Project</title>
     <link rel="stylesheet" href="scr/styles.css">
     <script src="https://cdn.plot.ly/plotly-3.6.0.min.js" charset="utf-8"></script>
-    <!--<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>-->
     <script src="https://cdn.plot.ly/plotly-3.3.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js"></script><!--Imports a Javascript mathmatical library-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js"></script>
 </head>
 
 
 <body>
     <div class="box">
-        <div>
+        <div class="parameters">
+
+            <div>
+                <h1>
+                    Detuning Parameters
+                </h1>
+                <input type="range" id="detuning0" step="1", min="-10", max="100" placeholder="d0", value="0">
+                <p> Initial Detuning(d0): <span id="detuning0_Value">0</span></p>
+            </div>
+            <div>
             <h1>
                  Time Parameters
             </h1>
-            <input type="number" id="time0" step="1", min="-10", max="100" placeholder="t0", value="-50"><p> Initial Time (t0)</p>
-            <input type="number" id="timef" step="1", min="-10", max="100" placeholder="tf", value="50"><p> Final Time (tf)</p>
+            <input type="number" id="time0" step=".01", min="-10", max="100" placeholder="t0", value="-50"><p> Initial Time (t0)</p>
+            <input type="number" id="timef" step=".01", min="-10", max="100" placeholder="tf", value="50"><p> Final Time (tf)</p>
+            <input type = "range" id="total_time" step="1", min="0", max="100" placeholder="total_time", value="100">
+            <p> Total Time: <span id="total_time_Value">100</span></p>
         </div>
+
         <div>
             <h1>
                  Position Parameters
             </h1>
-            <input type="number" id="t_p" step="1", min="0", max="100" placeholder="tp", value="-10"><p> Position (tp)</p>
-            <input type="number" id="t_s" step="1", min="0", max="100" placeholder="ts", value="2"><p> Position (ts)</p>
+            <!--<input type="number" id="t_p" step="1", min="0", max="100" placeholder="tp", value="-10"><p> Position (tp)</p>-->
+            <input type="range" id="t_s" step="0.1", min="0", max="100" placeholder="ts", value="2">
+            <p> Position(ts): <span id="t_s_Value">2</span></p>
         </div>
+
         <div>
             <h1>
-                 Angle Parameters In Radians
+                 Initial Final Population
             </h1>
 
-            <!-- Figure out way to display numbers with the sliders -->
-            <input type="number" id="alpha", step="0.1", min="0", max="6.28318530718" placeholder="Enter", value=".25"> <p> Alpha(α)</p>
-            <input type="number" id="beta", step="0.1", min="0", max="6.28318530718" placeholder="Enter", value=".25"><p> Beta(β)</p>
+            <input type="range" id="C0", step="0.01", min="0", max="1" placeholder="Enter", value=".25", class="slider"> 
+            <p> C Initial: <span id="C0_Value">0.25</span></p>
+            <input type="range" id="CF", step="0.01", min="0", max="1" placeholder="Enter", value="0", class="slider">
+            <p> C Final: <span id="CF_Value">0</span></p>
         </div>
-    </div> 
 
-    <button id="calculate">Calculate</button>
-    <div id = 'plot' style="width:100%; max-width:1000px; height:500px;"></div>
-    <div id = 'plotII' style="width:100%; max-width:1000px; height:500px;"></div>
-    <div id = 'plotIII' style="width:100%; max-width:1000px; height:500px;"></div>
+        <button id="calculate">Calculate</button>
+
+        </div> 
+        <div class="graphs">
+            <div class="first_line_graphs">
+                <div id = 'plot' style="width:100%; max-width:1000px; height:450px;"></div>
+                <div id = 'plotII' style="width:100%; max-width:1000px; height:450px;"></div>
+            </div>
+            <div id = 'plotIII' style="width:100%; max-width:1000px; height:500px;"></div>
+            
+        </div>  
+    </div>
+     
+ 
+    
 
     <script src="scr/numeric.js"></script>
     <script src="scr/index.js"></script>

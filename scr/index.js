@@ -3,18 +3,53 @@ const fsperau = (2.488843e-17)/(1.0e-15);
 const auI = 3.50944e16;
 const evperAU = 27.2114079527e0;
 
+
+// Gets the slider values and displays them on the page
+var slider = document.getElementById("C0");
+var slider2 = document.getElementById("CF");
+var output1 = document.getElementById("C0_Value");
+var output2 = document.getElementById("CF_Value");
+var slider3 = document.getElementById("t_s");
+var output3 = document.getElementById("t_s_Value");
+var slider4 = document.getElementById("total_time");
+var output4 = document.getElementById("total_time_Value");
+var slider5 = document.getElementById("detuning0");
+var output5 = document.getElementById("detuning0_Value");
+
+// Updates the displayed values for the sliders
+slider.addEventListener("input", function() {
+    output1.textContent = this.value;
+});
+
+slider2.addEventListener("input", function() {
+    output2.textContent = this.value;
+});
+
+slider3.addEventListener("input", function() {
+    output3.textContent = this.value;
+});
+slider4.addEventListener("input", function() {
+    output4.textContent = this.value;
+});      
+slider5.addEventListener("input", function() {
+    output5.textContent = this.value;
+});
+
 // Gets the Users Input Values & Treats them as floats
 document.getElementById("calculate").onclick = function d(){
     const time0 = parseFloat(document.getElementById("time0").value);
     const timef = parseFloat(document.getElementById("timef").value);
-    const tp_inp = parseFloat(document.getElementById("t_p").value);
+    const tp_inp = 0;
     const ts_inp = parseFloat(document.getElementById("t_s").value);
-    const alph = parseFloat(document.getElementById("alpha").value);
-    const bet = parseFloat(document.getElementById("beta").value);
-
+    const C_0 = parseFloat(document.getElementById("C0").value);
+    const C_F = parseFloat(document.getElementById("CF").value);
+    
     // Puts the User input into the Gaussion_Values function to create the constants for the Gaussians
-    var test = Gaussion_Values(tp_inp, ts_inp, alph, bet);
+    var test = Gaussion_Values(tp_inp, ts_inp, C_0, C_F);
     var Delta = delta_creation(test.E1, test.E2, test.E3, test.wp, test.ws);
+
+    slider3.min = -2*test.gp*fsperau;
+    slider3.max = 2*test.gp*fsperau;
     test.delta = Delta;
 
     // Converts the time from femtoseconds to atomic units
@@ -26,13 +61,17 @@ document.getElementById("calculate").onclick = function d(){
     const alpha = test.alpha;
     const beta = test.beta; 
 
-    // Graphing the Envelope and Pulse Functions
+    // Graphing the Envelope, Pulse, and Rotational Functions
     
-    // Creates the arrays for the values of the x & y(X: time, Y: Power)
+    // Creates the arrays to hold the values of the x & y
     const t_values = [];
+    const stagent_p = [];
+    const stagent_s = [];
     const envope_values_p = [];
     const envope_values_s = [];
     const steps = 2000
+    const no_frequency_p = []
+    const no_frequency_s = []
     const angle_va = []
     const beta_va = []
     const alpha_va = []
@@ -43,37 +82,67 @@ document.getElementById("calculate").onclick = function d(){
     for(let i = 0; i<= steps; i++){
         const t = test.t0 + i*dt
         t_values.push(t*fsperau)
+        
 
-        var envelop_p = (test.Op * test.mu12) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.sin(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.sin(test.beta)) 
-        envope_values_p.push(envelop_p * Math.cos(test.wp * t))
+        var stagent_p0 = (test.Op * test.mu12) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.sin(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.sin(test.beta)) 
+        stagent_p.push(stagent_p0 * Math.cos(test.wp * t)) 
+        no_frequency_p.push(stagent_p0)
+        
 
-        var envelop_s = (test.Os * test.mu23) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.cos(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.cos(test.beta)) 
-        envope_values_s.push(envelop_s * Math.cos(test.ws * t))
+        var stagent_s0 = (test.Os * test.mu23) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.cos(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.cos(test.beta)) 
+        stagent_s.push(stagent_s0 * Math.cos(test.ws * t))
+        no_frequency_s.push(stagent_s0)
 
-        angle_va.push(Math.atan(-envelop_p/envelop_s)/Math.PI)
+        angle_va.push(Math.atan(-stagent_p0/stagent_s0)/Math.PI)
+        alpha_va.push(C_0)
+        beta_va.push(C_F) 
 
-        beta_va.push(bet)
+    } 
 
-        alpha_va.push(alph)
-    }
-
-    // Creates the two axis values for the pupms & graphs them
+    // Creates Pump & Stokes Gaussians, and then plots them on the same graph
     const Gau_p = {
         x: t_values,
-        y: envope_values_p,
-        name: 'Pump Pulse',
+        y: stagent_p,
+        name: 'Pump Frequency Pulse',
         mode: 'lines',
         line: {color: 'blue', width: 1.5}
     }
 
     const Gau_s = {
         x: t_values,
-        y: envope_values_s,
-        name: 'Stokes Pulse',
+        y: stagent_s,
+        name: 'Stokes Frequency Pulse',
         mode: 'lines',
         line: {color: 'red', width: 1.5}
     }
 
+    const Gau_S_Stagnent = {
+        x: t_values,
+        y: no_frequency_s,
+        name: 'Stokes Stagnet Pulse',
+        mode: 'lines',
+        line: {color: 'red', width: 1.5}
+    }
+
+    const Gau_P_Stagnent = {
+        x: t_values,
+        y: no_frequency_p,
+        name: 'Pump Stagnent Pulse',
+        mode: 'lines',
+        line: {color: 'blue', width: 1.5}
+    }
+
+     const layout = {
+        title: {text: 'Envelope and Pulse Functions'},   
+        xaxis: {title: {text: 'Time (fs)'}},
+        yaxis: {title: {text: 'Amplitude'}},
+        showlegend: true 
+    };  
+    Plotly.newPlot('plot', [Gau_p, Gau_s, Gau_P_Stagnent, Gau_S_Stagnent], layout); 
+
+
+     
+    // Creates the Angle, Beta, and Alpha lines and plots them on a graph
     const angles = {
         x: t_values,
         y: angle_va,
@@ -87,45 +156,46 @@ document.getElementById("calculate").onclick = function d(){
         y: beta_va,
         name: 'Beta',
         mode: 'lines',
-        line: {color: 'red', width: 1.5}
+        line: {color: 'grey', width: 1.5, dash: 'dot'}
     }
-
     const Alpha_Line = {
         x: t_values,
         y: alpha_va,
         name: 'Alpha',
         mode: 'lines',
-        line: {color: 'blue', width: 1.5}
+        line: {color: 'grey', width: 1.5, dash: 'dot'}
     }
-    const layout = {
-        title: 'Envelope and Pulse Functions',
-        xaxis: {title: 'Time (fs)'},
-        yaxis: {title: 'Amplitude'},
-        showlegend: true 
-        };  
-        
-    
-    const layoutIII = {
-        title: 'Angle',
-        xaxis: {title: 'Time (fs)'},
-        yaxis: {title: 'Angle (rad)', range: [-1/2, 1/2]},
+    const layoutII = {
+        title: {text: 'Angle'},
+        xaxis: {title: {text: 'Time (fs)'}},
+        yaxis: {title: {text: 'Angle (rad)', range: [-1/2, 1/2]}},
         showlegend: true
         };
 
-    Plotly.newPlot('plot', [Gau_p, Gau_s], layout); 
-    Plotly.newPlot('plotIII', [angles, Beta_Line, Alpha_Line], layoutIII);
+    Plotly.newPlot('plotII', [angles, Beta_Line, Alpha_Line], layoutII);
 
+    // Calculates the populations and plots them on a graph
     res = population_calculations_NRW(test);
+    resII = population_calculations_RWA(test);
 
     var ii = res[0].length;
     const tt = [];
     const c1=[];
     const c3 = [];
+    const tt_RWA = []
+    const c1_RWA = []
+    const c3_RWA = []
+
     for(let i = 0; i<ii; i++){
         tt.push(res[0][i]*fsperau)
         c1.push(res[1][0][i]**2 + res[1][1][i]**2)
         c3.push(res[1][4][i]**2 + res[1][5][i]**2)
+        tt_RWA.push(resII[0][i]*fsperau)
+        c1_RWA.push(resII[1][0][i]**2 + resII[1][1][i]**2)
+        c3_RWA.push(resII[1][4][i]**2 + resII[1][5][i]**2)
+       
     }
+
     const C1 ={
         x: tt,
         y: c1,
@@ -142,31 +212,43 @@ document.getElementById("calculate").onclick = function d(){
         line: {color: 'red', width: 1.5}
     }
 
-    const layoutII = {
-        title: 'Populations',
-        xaxis: {title: 'Time (fs)'},
-        yaxis: {title: 'Population',range: [0, 1.2]},
+    const C1_RWAs = {
+        x: tt_RWA,
+        y: c1_RWA,
+        name: 'C1 (RWA)',
+        mode: 'lines',
+        line: {color: 'orange', width: 1.5, dash: 'dot'}
+
+    }
+
+    const C3_RWAs = {
+        x: tt_RWA,
+        y: c3_RWA,
+        name: 'C3 (RWA)',
+        mode: 'lines',
+        line: {color: 'purple', width: 1.5, dash: 'dot'}
+    }
+
+    const layoutIII = {
+        title: {text: 'Populations'},
+        xaxis: {title: {text: 'Time (fs)'}},
+        yaxis: {title: {text: 'Probability', range: [0, 1.2]}},
         showlegend: true
         };   
 
-    Plotly.newPlot('plotII', [C1, C3], layoutII);
-
-    const angle = []
-    const time_values = []
-
-   
+    Plotly.newPlot('plotIII', [C1, C3, C1_RWAs, C3_RWAs], layoutIII);    
 } 
 
 // Creates the constants for the diffrent Gaussians depending on the light being used
 // 0s/p - The strength of the light/Amplitude  ts/p - Distance from center(orgin)   gs/p - Duration of the entire Gaussian(FW@HM)   ws/p - Frequency of the laser 
-function Gaussion_Values(tp, ts, alpha, beta){
+function Gaussion_Values(tp, ts, C0, CF){
     const args = {
-        Os: Math.sqrt((5.803548e11)*(4.33**2)/auI),
+        Os: Math.sqrt((5.803548e10)*(4.33**2)/auI),
         ts: ts/fsperau,
         gs: 12/fsperau * 1/Math.sqrt(2*Math.log(2.0)),
         ws: 3.960496/evperAU,
 
-        Op: Math.sqrt((5.803548e11)*(4.33**2)/auI),
+        Op: Math.sqrt((5.803548e10)*(4.33**2)/auI),
         tp: tp/fsperau,
         gp: 12/fsperau * 1/Math.sqrt(2*Math.log(2.0)),
         wp: 5.266919/evperAU,
@@ -178,8 +260,8 @@ function Gaussion_Values(tp, ts, alpha, beta){
         mu12: 1,
         mu23: -1,
 
-        alpha: alpha * Math.PI,
-        beta: beta * Math.PI
+        alpha: Math.acos(Math.sqrt(C0)),
+        beta: Math.acos(Math.sqrt(CF))
     }
     return args
 }
@@ -236,10 +318,10 @@ function population_calculations_NRW(test){
 
     // Creates the Omegas, as well as inputing these into the system of equations to get the final values for the populations
     function f(t, x){
-        var OmegaS = (test.Os * test.mu23) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.cos(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.cos(test.
-        beta)) * Math.cos(test.ws * (t-test.ts))
+        var OmegaS = -(test.Os * test.mu23) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.cos(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.cos(test.
+        beta)) * Math.cos(test.ws * t)
         
-        var OmegaP = (test.Op * test.mu12) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.sin(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.sin(test.beta)) * Math.cos(test.wp * (t-test.tp))
+        var OmegaP = -(test.Op * test.mu12) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.sin(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.sin(test.beta)) * Math.cos(test.wp * t)
 
         return F(x, OmegaS, OmegaP)
             
@@ -247,6 +329,8 @@ function population_calculations_NRW(test){
 
     
     var x0 = [Math.cos(test.alpha), 0, 0, 0, Math.sin(test.alpha), 0]
+    console.log(test.alpha)
+    console.log(test.beta)
 
     // Uses the dopri function to get the final values for the populations, and returns these values
     var sol = numeric.dopri(test.t0, test.tf, x0, f, 1e-8, 100000)
@@ -259,7 +343,7 @@ function population_calculations_NRW(test){
 
 
 // Calculates the Population transfers acroos the levels
-function population_calculations(test){
+function population_calculations_RWA(test){
 
     // Creates the System of Equations for the Matrix Multiplication by the WaveForm
     function F(x, OmegaS, OmegaP){
@@ -291,4 +375,10 @@ function population_calculations(test){
     y_ret = numeric.transpose(y_line)
     return [time, numeric.transpose(y_line)]
 }
+
+
+
+
+
+
 
