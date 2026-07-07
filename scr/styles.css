@@ -1,10 +1,7 @@
 /* General modern resets */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f6f9;
-    margin: 0;
-    padding: 20px;
-    color: #333;
+    font-family: 'STIX Two Text', serif;
+    color: #222;
 }
 
 /* Main Layout */

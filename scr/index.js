@@ -49,7 +49,7 @@ durationSlider.addEventListener("input", function() {
     positionSlider.max = 50.0 + 2 * durationVal;
 
     // 2. Force the position value to be exactly 50 + duration
-    const newPosition = 50.0 + durationVal*1/Math.sqrt(2.0*Math.log(2.0));
+    const newPosition = 50.0 + durationVal;
     
     // 3. Apply the new value to the slider handle and text output
     positionSlider.value = newPosition;
@@ -145,7 +145,9 @@ function updatePlots() {
     };
 
     const layout = {
-        title: 'Envelope and Pulse Functions',   
+        title: 'Envelope and Pulse Functions', 
+        font: { family: "'STIX Two Text', serif",
+            size: 14},  
         xaxis: {title: 'Time (fs)'},
         yaxis: {title: 'Amplitude',range: [-2*test.Op,2*test.Op]},
         margin: { t: 40, l: 50, r: 20, b: 40 }
@@ -178,6 +180,8 @@ function updatePlots() {
     // NEW: Updated layoutII to include annotations for the Greek letters
     const layoutII = {
         title: {text: 'Angle'},
+        font: { family: "'STIX Two Text', serif",
+            size: 14},
         xaxis: {title: {text: 'Time (fs)'}},
         yaxis: {title: {text: 'Angle (rad)'}, range: [0.0, 0.55]},
         showlegend: true,
@@ -248,6 +252,8 @@ function updatePlots() {
 
     const layoutIII = {
         title: 'Populations',
+        font: {family: "'STIX Two Text', serif",
+            size: 14},
         xaxis: {title: 'Time (fs)'},
         yaxis: {title: 'Probability', range: [0, 1.2]},
         annotations: [
