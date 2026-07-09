@@ -3,6 +3,7 @@ const fsperau = (2.488843e-17)/(1.0e-15);
 const auI = 3.50944e16;
 const evperAU = 27.2114079527e0;
 
+
 const defaultValues = {
     C0: 0.25,
     CF: 0,
@@ -15,18 +16,22 @@ const defaultValues = {
     toggle_curves: true
 };
 
+
 function syncPositionSlider(durationValue) {
     const durationVal = parseFloat(durationValue);
     const min = 50.0 - 2 * durationVal;
     const max = 50.0 + 2 * durationVal;
 
+
     positionSlider.min = min;
     positionSlider.max = max;
+
 
     const newPosition = 50.0 + durationVal;
     positionSlider.value = newPosition;
     positionOutput.textContent = newPosition;
 }
+
 
 //Returns all the values back to their defaults
 document.getElementById("default").onclick = function resetToDefaults() {
@@ -34,12 +39,14 @@ document.getElementById("default").onclick = function resetToDefaults() {
         const element = document.getElementById(key);
         if (!element) return;
 
+
         if (element.type === "checkbox") {
             element.checked = value;
         } else {
             element.value = value;
         }
     });
+
 
     document.getElementById("time0").value = defaultValues.time0;
     document.getElementById("timef").value = defaultValues.timef;
@@ -50,9 +57,11 @@ document.getElementById("default").onclick = function resetToDefaults() {
     document.getElementById("CF_Value").textContent = defaultValues.CF;
     document.getElementById("t_s_Value").textContent = defaultValues.t_s;
 
+
     syncPositionSlider(defaultValues.duration);
     updatePlots();
 };
+
 
 // UI Elements mapping
 const sliders = {
@@ -64,6 +73,7 @@ const sliders = {
     duration: document.getElementById("duration")
 };
 
+
 const outputs = {
     C0: document.getElementById("C0_Value"),
     CF: document.getElementById("CF_Value"),
@@ -73,12 +83,14 @@ const outputs = {
     duration: document.getElementById("duration_Value")
 };
 
+
 // Update displayed values dynamically
 Object.keys(sliders).forEach(key => {
     sliders[key].addEventListener("input", function() {
         outputs[key].textContent = this.value;
     });
 });
+
 
 // Debounce function to prevent the heavy ODE solver from freezing the browser during slider drag
 function debounce(func, wait) {
@@ -95,30 +107,33 @@ durationSlider.addEventListener("input", function() {
     syncPositionSlider(this.value);
 });
 
+
 // Core calculation and plotting function
 function updatePlots() {
-
     //Creates all the consts from the user input, and treats them as floats
     const time0 = parseFloat(document.getElementById("time0").value);
     const timef = parseFloat(document.getElementById("timef").value);
     const delta_0 = parseFloat(document.getElementById('detuning0').value);
     const gboth = parseFloat(document.getElementById('duration').value);
-    
+   
     const tp_inp = 50.0;
     const ts_inp = parseFloat(document.getElementById("t_s").value);
     const C_0 = parseFloat(document.getElementById("C0").value);
     const C_F = parseFloat(document.getElementById("CF").value);
     const showCurves = document.getElementById("toggle_curves").checked;
-    
+   
     let test = Gaussion_Values(tp_inp, ts_inp, C_0, C_F, delta_0, gboth);
     let Delta = delta_creation(test.E1, test.E2, test.E3, test.wp, test.ws);
+
 
     sliders.t_s.min = 50.0 - 2 * test.gp * fsperau;
     sliders.t_s.max = 50.0 + 2 * test.gp * fsperau;
     test.delta = Delta;
 
+
     test.t0 = time0 / fsperau;
     test.tf = timef / fsperau;
+
 
     const t_values = [];
     const t_fq = [];
@@ -132,56 +147,45 @@ function updatePlots() {
     const alpha_va = [];
     const init_pop = [];
     const final_pop = [];
-    
+   
     const steps = 2000;
     const steps_fq = parseInt(steps/4);
     const steps_lq = parseInt(3/4 * steps);
     const dt = (test.tf - test.t0) / steps;
+
 
     // Loop through the wanted time from & #of steps to get x & y values
     for (let i = 0; i <= steps; i++) {
         const t = test.t0 + i * dt;
         t_values.push(t * fsperau);
 
+
         let stagent_p0 = (test.Op * test.mu12) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.sin(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.sin(test.beta));
         stagent_p.push(stagent_p0 * Math.cos(test.wp * t));
         no_frequency_p.push(stagent_p0);
+
 
         let stagent_s0 = (test.Os * test.mu23) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.cos(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.cos(test.beta));
         stagent_s.push(stagent_s0 * Math.cos(test.ws * t));
         no_frequency_s.push(stagent_s0);
 
+
         angle_va.push(Math.atan(-stagent_p0 / stagent_s0) / Math.PI);
         alpha_va.push(Math.acos(Math.sqrt(C_0))/Math.PI);
-        beta_va.push(Math.acos(Math.sqrt(C_F))/Math.PI); 
+        beta_va.push(Math.acos(Math.sqrt(C_F))/Math.PI);
+
 
         if(i<=steps_fq){
             t_fq.push(t*fsperau);
             init_pop.push(C_0);
         }
 
+
         if(i>steps_lq){
             t_lq.push(t*fsperau);
             final_pop.push(C_F);
         }
-    } 
-    // Does the calculations for the populations transfer graphs using data from the system of equations established below
-    let res = population_calculations_NRW(test);
-    let resII = population_calculations_RWA(test);
-
-    const tt = [], c1 = [], c3 = [], tt_RWA = [], c1_RWA = [], c3_RWA = [];
-    let ii = res[0].length;
-
-    for(let i = 0; i < ii; i++) {
-        tt.push(res[0][i] * fsperau);
-        c1.push(res[1][0][i]**2 + res[1][1][i]**2);
-        c3.push(res[1][4][i]**2 + res[1][5][i]**2);
-        tt_RWA.push(resII[0][i] * fsperau);
-        c1_RWA.push(resII[1][0][i]**2 + resII[1][1][i]**2);
-        c3_RWA.push(resII[1][4][i]**2 + resII[1][5][i]**2);
     }
-
- 
 
     // Plot I Configurations
     const Gau_p = {
@@ -203,6 +207,7 @@ function updatePlots() {
         mode: 'lines', line: {color: 'red', width: 2.5}
     };
 
+
     const layout = {
         title: {text: 'Envelope and Pulse Functions'},
         font: { family: "'STIX Two Text', serif",
@@ -211,7 +216,8 @@ function updatePlots() {
         yaxis: {title: {text: 'Amplitude'}, range: [-2*test.Op,2*test.Op]},
         margin: { t: 40, l: 50, r: 20, b: 40 }
     };  
-    Plotly.react('plot', [Gau_p, Gau_s, Gau_P_Stagnent, Gau_S_Stagnent], layout, {responsive: true}); 
+    Plotly.react('plot', [Gau_p, Gau_s, Gau_P_Stagnent, Gau_S_Stagnent], layout, {responsive: true});
+
 
     //Plot 2 Configurations
     const angles = {
@@ -221,6 +227,7 @@ function updatePlots() {
         mode: 'lines',
         line: {color: 'green', width: 1.5}
     }
+
 
     const Beta_Line = {
         x: t_values,
@@ -236,7 +243,7 @@ function updatePlots() {
         mode: 'lines',
         line: {color: 'grey', width: 1.5, dash: 'dot'}
     }
-    
+   
     // NEW: Updated layoutII to include annotations for the Greek letters
     const layoutII = {
         title: {text: 'Angle'},
@@ -250,7 +257,7 @@ function updatePlots() {
                 x: 25,         // Set x-axis position to 25fs
                 y: Math.acos(Math.sqrt(C_0))/Math.PI,        // Use the current alpha numerical value
                 text: '<b>α</b>', // Greek letter alpha
-                showarrow: false, 
+                showarrow: false,
                 yshift: 10,    // Shifts the text slightly above the line
                 font: {size: 16, color: 'black'}
             },
@@ -265,9 +272,29 @@ function updatePlots() {
         ]
     };
 
+
     Plotly.newPlot('plotII', [angles, Beta_Line, Alpha_Line], layoutII);
 
+
     // Plot III Configurations
+    // Does the calculations for the populations transfer graphs using data from the system of equations established below
+    let res = population_calculations_NRW(test);
+    let resII = population_calculations_RWA(test);
+
+
+    const tt = [], c1 = [], c3 = [], tt_RWA = [], c1_RWA = [], c3_RWA = [];
+    let ii = res[0].length;
+
+
+    for(let i = 0; i < ii; i++) {
+        tt.push(res[0][i] * fsperau);
+        c1.push(res[1][0][i]**2 + res[1][1][i]**2);
+        c3.push(res[1][4][i]**2 + res[1][5][i]**2);
+        tt_RWA.push(resII[0][i] * fsperau);
+        c1_RWA.push(resII[1][0][i]**2 + resII[1][1][i]**2);
+        c3_RWA.push(resII[1][4][i]**2 + resII[1][5][i]**2);
+    }
+
        const C1 = {
         x: tt, y: c1, name: 'C1',
         mode: 'lines', line: {color: 'blue', width: 2}
@@ -295,6 +322,7 @@ function updatePlots() {
         mode:'lines', line:{color: 'black', width:2, dash:'dashed'}
     };
 
+
     const layoutIII = {
         title: {text: 'Populations'},
         font: {family: "'STIX Two Text', serif",
@@ -306,7 +334,7 @@ function updatePlots() {
                 x: 25,         // Set x-axis position to 25fs
                 y: C_0,        // Use the current alpha numerical value
                 text: '<b>Initial</b>', // Greek letter alpha
-                showarrow: false, 
+                showarrow: false,
                 yshift: 10,    // Shifts the text slightly above the line
                 font: {size: 16, color: 'black'}
             },
@@ -320,20 +348,25 @@ function updatePlots() {
             }
         ],
         margin: { t: 40, l: 50, r: 20, b: 40 }
-    };   
+    };  
     Plotly.react('plotIII', [C1, C3, C1_RWAs, C3_RWAs,C_init,C_final], layoutIII, {responsive: true, displayModeBar: false });    
- const upperY = test.E2 * evperAU;
+    
+    //Plot IIII Configurations
+    const upperY = test.E2 * evperAU;
     const lowerY1 = test.E1* evperAU;
     const lowerY2 = test.E3* evperAU;
+
 
     const freqp = test.wp * evperAU;
     const freqs = test.ws * evperAU;
 
+
     const bwp = 4*Math.sqrt(2*Math.log(2.0))/test.gp * evperAU;
     const bws = 4*Math.sqrt(2*Math.log(2.0))/test.gs * evperAU;
 
+
     const trace1 = {
-        x: [1, 3], 
+        x: [1, 3],
         y: [lowerY1, lowerY1],
         mode: 'lines+text',
         text: ['', '|1⟩'], // Label on the right side
@@ -344,8 +377,9 @@ function updatePlots() {
         showlegend: false
     };
 
+
     const trace2 = {
-        x: [7, 9], 
+        x: [7, 9],
         y: [lowerY2, lowerY2],
         mode: 'lines+text',
         text: ['', '|2⟩'],
@@ -356,8 +390,9 @@ function updatePlots() {
         showlegend: false
     };
 
+
     const trace3 = {
-        x: [4, 6], 
+        x: [4, 6],
         y: [upperY, upperY],
         mode: 'lines+text',
         text: ['', '|3⟩'],
@@ -368,10 +403,11 @@ function updatePlots() {
         showlegend: false
     };
 
+
     // 2. Define the Layout (Arrows and removing axes)
     const layoutIV = {
         // Remove margins to maximize the drawing space
-        margin: { t: 10, b: 10, l: 10, r: 10 }, 
+        margin: { t: 10, b: 10, l: 10, r: 10 },
         xaxis: {
             visible: false, // Hide the X axis entirely
             range: [0, 10]  // Set a fixed internal coordinate system
@@ -423,11 +459,11 @@ function updatePlots() {
             {
                 ax: 2,         // Tail X
                 ay: lowerY1,      // Tail Y (slightly above lower state)
-                axref: 'x', 
+                axref: 'x',
                 ayref: 'y',
                 x: 4.5,        // Head X
                 y: lowerY1+freqp,       // Head Y (slightly below upper state)
-                xref: 'x', 
+                xref: 'x',
                 yref: 'y',
                 showarrow: true,
                 arrowhead: 2,
@@ -439,11 +475,11 @@ function updatePlots() {
             {
                 ax: 8,         // Tail X
                 ay: lowerY2,      // Tail Y
-                axref: 'x', 
+                axref: 'x',
                 ayref: 'y',
                 x: 5.5,        // Head X
                 y: lowerY2+freqs,       // Head Y
-                xref: 'x', 
+                xref: 'x',
                 yref: 'y',
                 showarrow: true,
                 arrowhead: 2,
@@ -456,9 +492,12 @@ function updatePlots() {
         paper_bgcolor: 'rgba(0,0,0,0)'
     };
 
+
     // 3. Render the Plot
     Plotly.newPlot('energyPlot', [trace1, trace2, trace3], layoutIV, {staticPlot: true});
 }
+
+
 
 
 // Math/Physics Helpers
@@ -482,10 +521,12 @@ function Gaussion_Values(tp, ts, C0, CF,det,gboth) {
     };
 }
 
+
 function envelope(t, t0, alpha, as, ap, mu) {
     let exs = Math.exp(alpha*(t-t0));
     return (1/mu)*alpha*(as-ap)*exs/((1+exs)*Math.sqrt((1-as+(1-ap)*exs)*(as+ap*exs)));
 }
+
 
 function delta_creation(E1, E2, E3, wp, ws) {
     let delta_12 = E1 - E2 + wp;
@@ -496,13 +537,16 @@ function delta_creation(E1, E2, E3, wp, ws) {
     return delta_12;
 }
 
+
 function Gaussion_Creation_S(t, ts, gs) {
     return Math.exp(-((t-ts)**2/gs**2));
 }
 
+
 function Gaussion_Creation_P(t, tp, gp) {
     return Math.exp(-((t-tp)**2/gp**2));
 }
+
 
 function population_calculations_NRW(test) {
     function F(x, OmegaS, OmegaP) {
@@ -512,7 +556,7 @@ function population_calculations_NRW(test) {
             test.E2 * x[3] - (OmegaP * x[1]) - (OmegaS * x[5]),
             -test.E2 * x[2] + (OmegaP * x[0]) + (OmegaS * x[4]),
             test.E3 * x[5] - (OmegaS * x[3]),
-            -(test.E3 * x[4]) + (OmegaS * x[2]) 
+            -(test.E3 * x[4]) + (OmegaS * x[2])
         ];
     }
     function f(t, x) {
@@ -525,6 +569,7 @@ function population_calculations_NRW(test) {
     return [sol.x, numeric.transpose(sol.y)];
 }
 
+
 //System of Equations created from the Hamiltonion
 function population_calculations_RWA(test) {
     function F(x, OmegaS, OmegaP) {
@@ -534,7 +579,7 @@ function population_calculations_RWA(test) {
             -(OmegaP * x[1])/2 - (OmegaS * x[5])/2,
             (OmegaP * x[0])/2 + (OmegaS * x[4])/2,
             test.delta * x[5] - (OmegaS * x[3])/2,
-            -(test.delta * x[4]) + (OmegaS * x[2])/2 
+            -(test.delta * x[4]) + (OmegaS * x[2])/2
         ];
     }
     function f(t, x) {
@@ -547,36 +592,42 @@ function population_calculations_RWA(test) {
     return [sol.x, numeric.transpose(sol.y)];
 }
 
+
 // Event Listeners for completely dynamic updating
 const inputsToWatch = ["C0", "CF", "t_s", "total_time", "detuning0", "duration", "time0", "timef", "toggle_curves"];
+
 
 // Apply a 300ms debounce to prevent the UI from freezing when rapidly sliding
 const debouncedUpdate = debounce(updatePlots, 300);
 
+
 inputsToWatch.forEach(id => {
     document.getElementById(id).addEventListener('input', debouncedUpdate);
-    document.getElementById(id).addEventListener('change', debouncedUpdate); 
+    document.getElementById(id).addEventListener('change', debouncedUpdate);
 });
+
 
 // Initial Plot Generation on Page Load
 window.onload = updatePlots;
 
-
-// Does the Info Box toggle 
+// Does the Info Box toggle
 function info_toggle(info){
     const info_box = document.getElementById(info);
     info_box.style.display = info_box.style.display === "none" ? "block" : "none";
 
+
 }
 
+
 function toggleHelp(){
-    var message = 
+    var message =
    'Welcome to the Stimulated Raman Adiabatic Passage(STIRAP) learning tool!\n\n\
     Developers: Brayton Bosuku, Miguel Alarcon, Nikoley Golubev\
     <b>\
     This tool demonstrates how STIRAP, which is a way to transfer a population of electrons from one level to the next, \
     interacts with certain parameters, as well as how changes to these items affect the graph as a whole.  \n\n\
     Visit our website https://ngolubev.com/ to see more interactive tools!';
+
 
     alert(message);
 }

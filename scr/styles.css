@@ -4,6 +4,7 @@ body {
     color: #222;
 }
 
+
 /* Main Layout */
 .box {
     display: flex;
@@ -12,6 +13,7 @@ body {
     max-width: 1800px;
     margin: 0 auto;
 }
+
 
 /* Left Sidebar */
 .parameters {
@@ -27,11 +29,13 @@ body {
     box-sizing: border-box;
 }
 
+
 .parameters h2 {
     margin: 0;
     font-size: 22px;
     color: #2c3e50;
 }
+
 
 .parameters h3 {
     margin: 0 0 10px 0;
@@ -41,11 +45,13 @@ body {
     letter-spacing: 0.5px;
 }
 
+
 .parameters hr {
     border: none;
     border-top: 1px solid #ecf0f1;
     margin: -10px 0 0 0;
 }
+
 
 .param-group {
     display: flex;
@@ -53,10 +59,12 @@ body {
     gap: 8px;
 }
 
+
 .param-group label {
     font-size: 13px;
     font-weight: 600;
 }
+
 
 .param-group input[type="range"],
 .param-group input[type="number"] {
@@ -66,6 +74,7 @@ body {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+
 
 .toggle-group {
     flex-direction: row;
@@ -77,11 +86,13 @@ body {
     margin-top: 10px;
 }
 
+
 .toggle-group input[type="checkbox"] {
     width: 18px;
     height: 18px;
     cursor: pointer;
 }
+
 
 /* Graph Area */
 .graphs {
@@ -92,12 +103,14 @@ body {
     min-width: 0; /* Prevents flexbox escaping boundaries */
 }
 
+
 .first_line_graphs {
     display: flex;
     flex-direction: row;
     gap: 20px;
     width: 100%;
 }
+
 
 .graph-container {
     /*background: #dad6d6;*/
@@ -106,6 +119,7 @@ body {
     padding: 10px;
     box-sizing: border-box;
 }
+
 
 .second_line_graphs {
     display: flex;
@@ -116,10 +130,12 @@ body {
     width: 100%;
 }
 
+
 .second_line_graphs > div {
     flex: 1;                    /* Makes both graphs take up equal 50/50 space */
     min-width: 0;               /* Critical fix: prevents Plotly from overflowing the flexbox */
 }
+
 
 /* Ensure top plots are equal size */
 #plot, #plotII {
@@ -128,25 +144,28 @@ body {
     height: 450px;
 }
 
+
 /* Bottom plot stretches fully */
 .large-graph {
     width: 100%;
     height: 500px;
 }
 
+
 #plotIII {
-    flex: 3; 
+    flex: 3;
     min-width: 0; /* Prevents Plotly from breaking the flexbox */
 }
 
+
 /* Make the energy diagram take up 25% of the space (1 part) */
 #energyPlot {
-    flex: 1; 
+    flex: 1;
     min-width: 0;
 }
 
-
 /*Creates the Information Box that appears on the site*/
+
 
 .info_icon{
     opacity: 0.5;
@@ -154,10 +173,12 @@ body {
     cursor: pointer;
 }
 
+
 .info_icon:hover {
     opacity: 1;
     cursor: pointer;
 }
+
 
 .info_box {
     position: absolute;
@@ -171,6 +192,7 @@ body {
     z-index: 1;
 }
 
+
 .Title_graph {
     display: flex;
     flex-direction: row;
@@ -178,6 +200,7 @@ body {
     justify-content: right;
     position: relative;
 }
+
 
 .button{
     border: #2c3e50;
