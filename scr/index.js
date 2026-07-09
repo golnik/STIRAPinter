@@ -3,6 +3,57 @@ const fsperau = (2.488843e-17)/(1.0e-15);
 const auI = 3.50944e16;
 const evperAU = 27.2114079527e0;
 
+const defaultValues = {
+    C0: 0.25,
+    CF: 0,
+    t_s: 62,    
+    total_time: 100,
+    detuning0: 0,
+    duration: 12,
+    time0: 0,
+    timef: 100,
+    toggle_curves: true
+};
+
+function syncPositionSlider(durationValue) {
+    const durationVal = parseFloat(durationValue);
+    const min = 50.0 - 2 * durationVal;
+    const max = 50.0 + 2 * durationVal;
+
+    positionSlider.min = min;
+    positionSlider.max = max;
+
+    const newPosition = 50.0 + durationVal;
+    positionSlider.value = newPosition;
+    positionOutput.textContent = newPosition;
+}
+
+//Returns all the values back to their defaults
+document.getElementById("default").onclick = function resetToDefaults() {
+    Object.entries(defaultValues).forEach(([key, value]) => {
+        const element = document.getElementById(key);
+        if (!element) return;
+
+        if (element.type === "checkbox") {
+            element.checked = value;
+        } else {
+            element.value = value;
+        }
+    });
+
+    document.getElementById("time0").value = defaultValues.time0;
+    document.getElementById("timef").value = defaultValues.timef;
+    document.getElementById("total_time_Value").textContent = defaultValues.total_time;
+    document.getElementById("detuning0_Value").textContent = defaultValues.detuning0;
+    document.getElementById("duration_Value").textContent = defaultValues.duration;
+    document.getElementById("C0_Value").textContent = defaultValues.C0;
+    document.getElementById("CF_Value").textContent = defaultValues.CF;
+    document.getElementById("t_s_Value").textContent = defaultValues.t_s;
+
+    syncPositionSlider(defaultValues.duration);
+    updatePlots();
+};
+
 // UI Elements mapping
 const sliders = {
     C0: document.getElementById("C0"),
@@ -37,29 +88,17 @@ function debounce(func, wait) {
         timeout = setTimeout(() => func.apply(this, args), wait);
     };
 }
-durationSlider = document.getElementById('duration');
+const durationSlider = document.getElementById('duration');
 const positionSlider = document.getElementById("t_s");
 const positionOutput = document.getElementById("t_s_Value");
 durationSlider.addEventListener("input", function() {
-    const durationVal = parseFloat(this.value);
-
-    // 1. Update the ranges of the position slider 
-    // (You can adjust the math here if you want different min/max bounds)
-    positionSlider.min = 50.0 - 2 * durationVal;
-    positionSlider.max = 50.0 + 2 * durationVal;
-
-    // 2. Force the position value to be exactly 50 + duration
-    const newPosition = 50.0 + durationVal;
-    
-    // 3. Apply the new value to the slider handle and text output
-    positionSlider.value = newPosition;
-    positionOutput.textContent = newPosition;
+    syncPositionSlider(this.value);
 });
 
 // Core calculation and plotting function
 function updatePlots() {
 
-    //Creates all the consts from the user input, and functions within
+    //Creates all the consts from the user input, and treats them as floats
     const time0 = parseFloat(document.getElementById("time0").value);
     const timef = parseFloat(document.getElementById("timef").value);
     const delta_0 = parseFloat(document.getElementById('detuning0').value);
@@ -283,6 +322,142 @@ function updatePlots() {
         margin: { t: 40, l: 50, r: 20, b: 40 }
     };   
     Plotly.react('plotIII', [C1, C3, C1_RWAs, C3_RWAs,C_init,C_final], layoutIII, {responsive: true, displayModeBar: false });    
+ const upperY = test.E2 * evperAU;
+    const lowerY1 = test.E1* evperAU;
+    const lowerY2 = test.E3* evperAU;
+
+    const freqp = test.wp * evperAU;
+    const freqs = test.ws * evperAU;
+
+    const bwp = 4*Math.sqrt(2*Math.log(2.0))/test.gp * evperAU;
+    const bws = 4*Math.sqrt(2*Math.log(2.0))/test.gs * evperAU;
+
+    const trace1 = {
+        x: [1, 3], 
+        y: [lowerY1, lowerY1],
+        mode: 'lines+text',
+        text: ['', '|1⟩'], // Label on the right side
+        textposition: 'middle right',
+        textfont: { size: 18 },
+        line: { color: '#34495e', width: 4 },
+        hoverinfo: 'none',
+        showlegend: false
+    };
+
+    const trace2 = {
+        x: [7, 9], 
+        y: [lowerY2, lowerY2],
+        mode: 'lines+text',
+        text: ['', '|2⟩'],
+        textposition: 'middle right',
+        textfont: { size: 18 },
+        line: { color: '#34495e', width: 4 },
+        hoverinfo: 'none',
+        showlegend: false
+    };
+
+    const trace3 = {
+        x: [4, 6], 
+        y: [upperY, upperY],
+        mode: 'lines+text',
+        text: ['', '|3⟩'],
+        textposition: 'middle right',
+        textfont: { size: 18 },
+        line: { color: '#34495e', width: 4 },
+        hoverinfo: 'none',
+        showlegend: false
+    };
+
+    // 2. Define the Layout (Arrows and removing axes)
+    const layoutIV = {
+        // Remove margins to maximize the drawing space
+        margin: { t: 10, b: 10, l: 10, r: 10 }, 
+        xaxis: {
+            visible: false, // Hide the X axis entirely
+            range: [0, 10]  // Set a fixed internal coordinate system
+        },
+        yaxis: {
+            visible: false, // Hide the Y axis entirely
+            range: [lowerY1-2*bwp, upperY+3*bwp] // Padding above and below the states
+        },
+        shapes: [
+            // Pump Laser Bandwidth - Tail (State 1)
+            {
+                type: 'rect',
+                x0: 1.5, x1: 2.5,      // Centers the box around the tail at X=2
+                y0: lowerY1-bwp/2, y1: lowerY1+bwp/2,   // The "height" or bandwidth thickness
+                fillcolor: '#e74c3c',
+                opacity: 0.2,          // Makes it lightly shaded
+                line: { width: 0 }     // Removes the hard border
+            },
+            // Pump Laser Bandwidth - Head (State 3)
+            {
+                type: 'rect',
+                x0: 4.1, x1: 4.9,      // Centers around the head at X=4.5
+                y0: lowerY1+freqp-bwp/2, y1: lowerY1+freqp+bwp/2,
+                fillcolor: '#e74c3c',
+                opacity: 0.2,
+                line: { width: 0 }
+            },
+            // Stokes Laser Bandwidth - Tail (State 2)
+            {
+                type: 'rect',
+                x0: 7.5, x1: 8.5,      // Centers around the tail at X=8
+                y0: lowerY2-bwp/2, y1: lowerY2+bwp/2,
+                fillcolor: '#3498db',
+                opacity: 0.2,
+                line: { width: 0 }
+            },
+            // Stokes Laser Bandwidth - Head (State 3)
+            {
+                type: 'rect',
+                x0: 5.1, x1: 5.9,      // Centers around the head at X=5.5
+                y0: lowerY2+freqs-bwp/2, y1: lowerY2+freqs+bwp/2,
+                fillcolor: '#3498db',
+                opacity: 0.2,
+                line: { width: 0 }
+            }
+        ],
+        annotations: [
+            // Pump Arrow (|1⟩ to |3⟩)
+            {
+                ax: 2,         // Tail X
+                ay: lowerY1,      // Tail Y (slightly above lower state)
+                axref: 'x', 
+                ayref: 'y',
+                x: 4.5,        // Head X
+                y: lowerY1+freqp,       // Head Y (slightly below upper state)
+                xref: 'x', 
+                yref: 'y',
+                showarrow: true,
+                arrowhead: 2,
+                arrowsize: 1.5,
+                arrowwidth: 2,
+                arrowcolor: '#e74c3c' // Red
+            },
+            // Stokes Arrow (|2⟩ to |3⟩)
+            {
+                ax: 8,         // Tail X
+                ay: lowerY2,      // Tail Y
+                axref: 'x', 
+                ayref: 'y',
+                x: 5.5,        // Head X
+                y: lowerY2+freqs,       // Head Y
+                xref: 'x', 
+                yref: 'y',
+                showarrow: true,
+                arrowhead: 2,
+                arrowsize: 1.5,
+                arrowwidth: 2,
+                arrowcolor: '#3498db' // Blue
+            }
+        ],
+        plot_bgcolor: 'rgba(0,0,0,0)', // Transparent background
+        paper_bgcolor: 'rgba(0,0,0,0)'
+    };
+
+    // 3. Render the Plot
+    Plotly.newPlot('energyPlot', [trace1, trace2, trace3], layoutIV, {staticPlot: true});
 }
 
 
@@ -359,7 +534,7 @@ function population_calculations_RWA(test) {
             -(OmegaP * x[1])/2 - (OmegaS * x[5])/2,
             (OmegaP * x[0])/2 + (OmegaS * x[4])/2,
             test.delta * x[5] - (OmegaS * x[3])/2,
-            -(test.delta * x[4]) - (OmegaS * x[2])/2 
+            -(test.delta * x[4]) + (OmegaS * x[2])/2 
         ];
     }
     function f(t, x) {
@@ -397,6 +572,8 @@ function info_toggle(info){
 function toggleHelp(){
     var message = 
    'Welcome to the Stimulated Raman Adiabatic Passage(STIRAP) learning tool!\n\n\
+    Developers: Brayton Bosuku, Miguel Alarcon, Nikoley Golubev\
+    <b>\
     This tool demonstrates how STIRAP, which is a way to transfer a population of electrons from one level to the next, \
     interacts with certain parameters, as well as how changes to these items affect the graph as a whole.  \n\n\
     Visit our website https://ngolubev.com/ to see more interactive tools!';

@@ -100,11 +100,25 @@ body {
 }
 
 .graph-container {
-    background: #dad6d6;
+    /*background: #dad6d6;*/
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     padding: 10px;
     box-sizing: border-box;
+}
+
+.second_line_graphs {
+    display: flex;
+    flex-direction: row;        /* Forces children to sit side-by-side */
+    justify-content: space-between;
+    align-items: center;        /* Aligns them vertically in the center */
+    gap: 20px;                  /* Adds space between the two graphs */
+    width: 100%;
+}
+
+.second_line_graphs > div {
+    flex: 1;                    /* Makes both graphs take up equal 50/50 space */
+    min-width: 0;               /* Critical fix: prevents Plotly from overflowing the flexbox */
 }
 
 /* Ensure top plots are equal size */
@@ -119,6 +133,18 @@ body {
     width: 100%;
     height: 500px;
 }
+
+#plotIII {
+    flex: 3; 
+    min-width: 0; /* Prevents Plotly from breaking the flexbox */
+}
+
+/* Make the energy diagram take up 25% of the space (1 part) */
+#energyPlot {
+    flex: 1; 
+    min-width: 0;
+}
+
 
 /*Creates the Information Box that appears on the site*/
 
@@ -151,7 +177,6 @@ body {
     align-items: right;
     justify-content: right;
     position: relative;
-    border: 1px dotted black;
 }
 
 .button{

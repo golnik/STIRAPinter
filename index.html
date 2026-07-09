@@ -64,10 +64,25 @@
             <div class="param-group toggle-group">
                 <input type="checkbox" id="toggle_curves" checked>
                 <label for="toggle_curves" style="cursor: pointer; font-weight: bold;">Show Frequency Pulse & RWA Curves</label>
+
             </div>
+            <button id="default"> Default Values </button>
+        </div>
+
+       <div class="graphs">
+            <div class="first_line_graphs">
+                <div id="plot" class="graph-container" style="width:100%; max-width:1000px; height:300px;"></div>
+                <div id="plotII" class="graph-container" style="width:100%; max-width:1000px; height:300px;"></div>
+            </div>
+            <div class="second_line_graphs">
+                <div id="energyPlot" class="graph-container large-graph"></div>
+                <div id="plotIII" class="graph-container large-graph"></div>
+            </div>
+            
         </div> 
 
 
+        <!-- Create Button to restore values back to default ones -->
 
 <!-- Creates the Graphs and Placement with them -->
         <div class="graphs">
