@@ -148,8 +148,8 @@ function updatePlots() {
         title: 'Envelope and Pulse Functions', 
         font: { family: "'STIX Two Text', serif",
             size: 14},  
-        xaxis: {title: 'Time (fs)'},
-        yaxis: {title: 'Amplitude',range: [-2*test.Op,2*test.Op]},
+        xaxis: {title: {text:'Time (fs)'}},
+        yaxis: {title: {text: 'Amplitude'},range: [-2*test.Op,2*test.Op]},
         margin: { t: 40, l: 50, r: 20, b: 40 }
     };  
     Plotly.react('plot', [Gau_p, Gau_s, Gau_P_Stagnent, Gau_S_Stagnent], layout, {responsive: true}); 
@@ -179,7 +179,7 @@ function updatePlots() {
     
     // NEW: Updated layoutII to include annotations for the Greek letters
     const layoutII = {
-        title: {text: 'Angle'},
+        title: {text: 'Adiabatic mixing angle.'},
         font: { family: "'STIX Two Text', serif",
             size: 14},
         xaxis: {title: {text: 'Time (fs)'}},
@@ -254,8 +254,8 @@ function updatePlots() {
         title: 'Populations',
         font: {family: "'STIX Two Text', serif",
             size: 14},
-        xaxis: {title: 'Time (fs)'},
-        yaxis: {title: 'Probability', range: [0, 1.2]},
+        xaxis: {title: {text:'Time (fs)'}},
+        yaxis: {title: {text:'Probability'}, range: [0, 1.2]},
         annotations: [
             {
                 x: 25,         // Set x-axis position to 25fs
@@ -276,7 +276,146 @@ function updatePlots() {
         ],
         margin: { t: 40, l: 50, r: 20, b: 40 }
     };   
-    Plotly.react('plotIII', [C1, C3, C1_RWAs, C3_RWAs,C_init,C_final], layoutIII, {responsive: true});    
+    Plotly.react('plotIII', [C1, C3, C1_RWAs, C3_RWAs,C_init,C_final], layoutIII, {responsive: true});
+
+
+    // Define Y-coordinates for the energy levels
+    const upperY = test.E2 * evperAU;
+    const lowerY1 = test.E1* evperAU;
+    const lowerY2 = test.E3* evperAU;
+
+    const freqp = test.wp * evperAU;
+    const freqs = test.ws * evperAU;
+
+    const bwp = 4*Math.sqrt(2*Math.log(2.0))/test.gp * evperAU;
+    const bws = 4*Math.sqrt(2*Math.log(2.0))/test.gs * evperAU;
+
+    const trace1 = {
+        x: [1, 3], 
+        y: [lowerY1, lowerY1],
+        mode: 'lines+text',
+        text: ['', '|1⟩'], // Label on the right side
+        textposition: 'middle right',
+        textfont: { size: 18 },
+        line: { color: '#34495e', width: 4 },
+        hoverinfo: 'none',
+        showlegend: false
+    };
+
+    const trace2 = {
+        x: [7, 9], 
+        y: [lowerY2, lowerY2],
+        mode: 'lines+text',
+        text: ['', '|2⟩'],
+        textposition: 'middle right',
+        textfont: { size: 18 },
+        line: { color: '#34495e', width: 4 },
+        hoverinfo: 'none',
+        showlegend: false
+    };
+
+    const trace3 = {
+        x: [4, 6], 
+        y: [upperY, upperY],
+        mode: 'lines+text',
+        text: ['', '|3⟩'],
+        textposition: 'middle right',
+        textfont: { size: 18 },
+        line: { color: '#34495e', width: 4 },
+        hoverinfo: 'none',
+        showlegend: false
+    };
+
+    // 2. Define the Layout (Arrows and removing axes)
+    const layoutIV = {
+        // Remove margins to maximize the drawing space
+        margin: { t: 10, b: 10, l: 10, r: 10 }, 
+        xaxis: {
+            visible: false, // Hide the X axis entirely
+            range: [0, 10]  // Set a fixed internal coordinate system
+        },
+        yaxis: {
+            visible: false, // Hide the Y axis entirely
+            range: [lowerY1-2*bwp, upperY+3*bwp] // Padding above and below the states
+        },
+        shapes: [
+            // Pump Laser Bandwidth - Tail (State 1)
+            {
+                type: 'rect',
+                x0: 1.5, x1: 2.5,      // Centers the box around the tail at X=2
+                y0: lowerY1-bwp/2, y1: lowerY1+bwp/2,   // The "height" or bandwidth thickness
+                fillcolor: '#e74c3c',
+                opacity: 0.2,          // Makes it lightly shaded
+                line: { width: 0 }     // Removes the hard border
+            },
+            // Pump Laser Bandwidth - Head (State 3)
+            {
+                type: 'rect',
+                x0: 4.1, x1: 4.9,      // Centers around the head at X=4.5
+                y0: lowerY1+freqp-bwp/2, y1: lowerY1+freqp+bwp/2,
+                fillcolor: '#e74c3c',
+                opacity: 0.2,
+                line: { width: 0 }
+            },
+            // Stokes Laser Bandwidth - Tail (State 2)
+            {
+                type: 'rect',
+                x0: 7.5, x1: 8.5,      // Centers around the tail at X=8
+                y0: lowerY2-bwp/2, y1: lowerY2+bwp/2,
+                fillcolor: '#3498db',
+                opacity: 0.2,
+                line: { width: 0 }
+            },
+            // Stokes Laser Bandwidth - Head (State 3)
+            {
+                type: 'rect',
+                x0: 5.1, x1: 5.9,      // Centers around the head at X=5.5
+                y0: lowerY2+freqs-bwp/2, y1: lowerY2+freqs+bwp/2,
+                fillcolor: '#3498db',
+                opacity: 0.2,
+                line: { width: 0 }
+            }
+        ],
+        annotations: [
+            // Pump Arrow (|1⟩ to |3⟩)
+            {
+                ax: 2,         // Tail X
+                ay: lowerY1,      // Tail Y (slightly above lower state)
+                axref: 'x', 
+                ayref: 'y',
+                x: 4.5,        // Head X
+                y: lowerY1+freqp,       // Head Y (slightly below upper state)
+                xref: 'x', 
+                yref: 'y',
+                showarrow: true,
+                arrowhead: 2,
+                arrowsize: 1.5,
+                arrowwidth: 2,
+                arrowcolor: '#e74c3c' // Red
+            },
+            // Stokes Arrow (|2⟩ to |3⟩)
+            {
+                ax: 8,         // Tail X
+                ay: lowerY2,      // Tail Y
+                axref: 'x', 
+                ayref: 'y',
+                x: 5.5,        // Head X
+                y: lowerY2+freqs,       // Head Y
+                xref: 'x', 
+                yref: 'y',
+                showarrow: true,
+                arrowhead: 2,
+                arrowsize: 1.5,
+                arrowwidth: 2,
+                arrowcolor: '#3498db' // Blue
+            }
+        ],
+        plot_bgcolor: 'rgba(0,0,0,0)', // Transparent background
+        paper_bgcolor: 'rgba(0,0,0,0)'
+    };
+
+    // 3. Render the Plot
+    Plotly.newPlot('energyPlot', [trace1, trace2, trace3], layoutIV, {staticPlot: true});
 }
 
 // Math/Physics Helpers
@@ -351,7 +490,7 @@ function population_calculations_RWA(test) {
             -(OmegaP * x[1])/2 - (OmegaS * x[5])/2,
             (OmegaP * x[0])/2 + (OmegaS * x[4])/2,
             test.delta * x[5] - (OmegaS * x[3])/2,
-            -(test.delta * x[4]) - (OmegaS * x[2])/2 
+            -(test.delta * x[4]) + (OmegaS * x[2])/2 
         ];
     }
     function f(t, x) {

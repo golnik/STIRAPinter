@@ -107,6 +107,22 @@ body {
     box-sizing: border-box;
 }
 
+/* Target the container holding both graphs */
+.second_line_graphs {
+    display: flex;
+    flex-direction: row;        /* Forces children to sit side-by-side */
+    justify-content: space-between;
+    align-items: center;        /* Aligns them vertically in the center */
+    gap: 20px;                  /* Adds space between the two graphs */
+    width: 100%;
+}
+
+/* Ensure both graphs share the available space properly */
+.second_line_graphs > div {
+    flex: 1;                    /* Makes both graphs take up equal 50/50 space */
+    min-width: 0;               /* Critical fix: prevents Plotly from overflowing the flexbox */
+}
+
 /* Ensure top plots are equal size */
 #plot, #plotII {
     flex: 1;
@@ -116,6 +132,17 @@ body {
 
 /* Bottom plot stretches fully */
 .large-graph {
-    width: 100%;
+    width: 50%;
     height: 500px;
+}
+
+#plotIII {
+    flex: 3; 
+    min-width: 0; /* Prevents Plotly from breaking the flexbox */
+}
+
+/* Make the energy diagram take up 25% of the space (1 part) */
+#energyPlot {
+    flex: 1; 
+    min-width: 0;
 }
