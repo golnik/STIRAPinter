@@ -111,6 +111,11 @@ body {
     width: 100%;
 }
 
+.graph-card {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+}
 
 .graph-container {
     /*background: #dad6d6;*/
@@ -158,10 +163,20 @@ body {
 }
 
 
-/* Make the energy diagram take up 25% of the space (1 part) */
+/* Make the energy diagram narrower but keep the same height as the population graph */
+.second_line_graphs .graph-card:first-child {
+    flex: 0 0 40%;
+    max-width: 40%;
+}
+
+.second_line_graphs .graph-card:first-child .graph-container,
 #energyPlot {
-    flex: 1;
+    width: 100%;
+    max-width: 100%;
     min-width: 0;
+    height: 500px !important;
+    min-height: 500px !important;
+    display: block;
 }
 
 /*Creates the Information Box that appears on the site*/
@@ -182,22 +197,39 @@ body {
 
 .info_box {
     position: absolute;
-    top: 50%;
-    left:50%;
-    width: 15vw;
+    top: calc(100% + 6px);
+    right: 0;
+    width: min(220px, 20vw);
+    max-width: 220px;
     background-color: rgb(223, 182, 223);
     border: 1px solid black;
     border-radius: 5px;
-    padding: 0px 5px;
-    z-index: 1;
+    padding: 6px 8px;
+    z-index: 3;
+    box-sizing: border-box;
 }
 
 
 .Title_graph {
     display: flex;
     flex-direction: row;
-    align-items: right;
-    justify-content: right;
+    align-items: center;
+    justify-content: flex-end;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 4;
+}
+
+.first_line_graphs {
+    position: relative;
+}
+
+.second_line_graphs {
+    position: relative;
+}
+
+.graph-container {
     position: relative;
 }
 

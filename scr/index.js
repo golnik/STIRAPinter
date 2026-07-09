@@ -110,6 +110,7 @@ durationSlider.addEventListener("input", function() {
 
 // Core calculation and plotting function
 function updatePlots() {
+
     //Creates all the consts from the user input, and treats them as floats
     const time0 = parseFloat(document.getElementById("time0").value);
     const timef = parseFloat(document.getElementById("timef").value);
@@ -216,7 +217,7 @@ function updatePlots() {
         yaxis: {title: {text: 'Amplitude'}, range: [-2*test.Op,2*test.Op]},
         margin: { t: 40, l: 50, r: 20, b: 40 }
     };  
-    Plotly.react('plot', [Gau_p, Gau_s, Gau_P_Stagnent, Gau_S_Stagnent], layout, {responsive: true});
+    Plotly.react('plot', [Gau_p, Gau_s, Gau_P_Stagnent, Gau_S_Stagnent], layout, {responsive: true, displayModeBar: false});
 
 
     //Plot 2 Configurations
@@ -273,7 +274,7 @@ function updatePlots() {
     };
 
 
-    Plotly.newPlot('plotII', [angles, Beta_Line, Alpha_Line], layoutII);
+    Plotly.newPlot('plotII', [angles, Beta_Line, Alpha_Line], layoutII, {responsive: true, displayModeBar: false});
 
 
     // Plot III Configurations
@@ -611,11 +612,18 @@ inputsToWatch.forEach(id => {
 window.onload = updatePlots;
 
 // Does the Info Box toggle
-function info_toggle(info){
+function show_info(info) {
     const info_box = document.getElementById(info);
-    info_box.style.display = info_box.style.display === "none" ? "block" : "none";
+    if (info_box) {
+        info_box.style.display = 'block';
+    }
+}
 
-
+function hide_info(info) {
+    const info_box = document.getElementById(info);
+    if (info_box) {
+        info_box.style.display = 'none';
+    }
 }
 
 
@@ -623,10 +631,11 @@ function toggleHelp(){
     var message =
    'Welcome to the Stimulated Raman Adiabatic Passage(STIRAP) learning tool!\n\n\
     Developers: Brayton Bosuku, Miguel Alarcon, Nikoley Golubev\
-    <b>\
+    \
+    \
     This tool demonstrates how STIRAP, which is a way to transfer a population of electrons from one level to the next, \
     interacts with certain parameters, as well as how changes to these items affect the graph as a whole.  \n\n\
-    Visit our website https://ngolubev.com/ to see more interactive tools!';
+    Visit https://ngolubev.com/ to see more interactive tools and information related to Quantum Physics!';
 
 
     alert(message);

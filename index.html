@@ -17,9 +17,6 @@
 
 </head>
 
-
-
-
 <!-- Creates the Parameters that the user may input -->
 <body>
 
@@ -81,38 +78,45 @@
 
        <div class="graphs">
             <div class="first_line_graphs">
-                <div class="Title_graph">
-                    <i class="fas fa-info-circle" onclick="info_toggle('Laser_Pulse_box')"></i>
-                    <div class="info_box" id="Laser_Pulse_box" style="display: none;">
-                        <p> This represents the OmegaP & OmegaS laser pulses we used in our simulation in order to transfer a population of electrons within the 3-level system. From level |1> to level |3> without interfering or touching the intermediate state |2>.  </p>
+                <div class="graph-card">
+                    <div class="Title_graph">
+                        <i class="fas fa-info-circle" onmouseenter="show_info('Laser_Pulse_box')" onmouseleave="hide_info('Laser_Pulse_box')"></i>
+                        <div class="info_box" id="Laser_Pulse_box" style="display: none;">
+                            <p> This represents the OmegaP & OmegaS laser pulses we used in our simulation in order to transfer a population of electrons within the 3-level system. From level |1> to level |3> without interfering or touching the intermediate state |2>.  </p>
+                        </div>
                     </div>
+                    <div id="plot" class="graph-container" style="width:100%; max-width:1000px; height:300px;"></div>
                 </div>
-                <div class="Title_graph">
-                    <i class="fas fa-info-circle" onclick="info_toggle('Laser_Pulse_box')"></i>
-                    <div class="info_box" id="Laser_Pulse_box" style="display: none;">
-                        <p> This represents the OmegaP & OmegaS laser pulses we used in our simulation in order to transfer a population of electrons within the 3-level system. From level |1> to level |3> without interfering or touching the intermediate state |2>.  </p>
-                    </div>
-                </div>
-                <div id="plot" class="graph-container" style="width:100%; max-width:1000px; height:300px;"></div>
                 
-                <div class="Title_graph">
-                    <i class="fas fa-info-circle" onclick="info_toggle('Angle_box')"></i>
-                    <div class="info_box" id="Angle_box" style="display: none;">
-                        <p> This shows the angle of the diffrence between the OmegaP & OmegaS laser pulses. </p>
+                <div class="graph-card">
+                    <div class="Title_graph">
+                        <i class="fas fa-info-circle" onmouseenter="show_info('Angle_box')" onmouseleave="hide_info('Angle_box')"></i>
+                        <div class="info_box" id="Angle_box" style="display: none;">
+                            <p> This shows the angle of the diffrence between the OmegaP & OmegaS laser pulses. </p>
+                        </div>
                     </div>
+                    <div id="plotII" class="graph-container" style="width:100%; max-width:1000px; height:300px;"></div>
                 </div>
-                <div id="plotII" class="graph-container" style="width:100%; max-width:1000px; height:300px;"></div>
             </div>
             <div class="second_line_graphs">
-                
-                <div id="energyPlot" class="graph-container large-graph"></div>
-                <div class="Title_graph">
-                    <i class="fas fa-info-circle" onclick="info_toggle('info_box_t')"></i>
-                    <div class="info_box" id="info_box_t" style="display: none;">
-                        <p> This represents how the population of level |1> & level |3> changes over time, as well as the probability of the electron being present in that level depending on the time.  </p>
+                <div class="graph-card">
+                    <div class="Title_graph">
+                        <i class="fas fa-info-circle" onmouseenter="show_info('info_box_energy')" onmouseleave="hide_info('info_box_energy')"></i>
+                        <div class="info_box" id="info_box_energy" style="display: none;">
+                            <p> This represents the energy-level diagram and the laser couplings used in the STIRAP process. </p>
+                        </div>
                     </div>
+                    <div id="energyPlot" class="graph-container large-graph"></div>
                 </div>
-                <div id="plotIII" class="graph-container large-graph"></div>
+                <div class="graph-card">
+                    <div class="Title_graph">
+                        <i class="fas fa-info-circle" onmouseenter="show_info('info_box_t')" onmouseleave="hide_info('info_box_t')"></i>
+                        <div class="info_box" id="info_box_t" style="display: none;">
+                            <p> This represents how the population of level |1> & level |3> changes over time, as well as the probability of the electron being present in that level depending on the time.  </p>
+                        </div>
+                    </div>
+                    <div id="plotIII" class="graph-container large-graph"></div>
+                </div>
             </div>
         </div>        
     </div>
