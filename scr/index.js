@@ -437,7 +437,10 @@ function updatePlots() {
     // 2. Define the Layout (Arrows and removing axes)
     const layoutIV = {
         font: { family: "'STIX Two Text', serif", size: 14 },
-        margin: { ...PLOT_MARGIN, l: 60, pad: 0 }, // Extra left margin fits the tick labels; no pad so ticks touch the arrow line
+        // This diagram has no legend row and no visible x-axis, so it doesn't need
+        // PLOT_MARGIN's t/b space reserved for those - shrinking them lets the
+        // diagram fill the card down to the bottom instead of leaving a gap.
+        margin: { ...PLOT_MARGIN, l: 60, pad: 0, t: 30, b: 10 },
         xaxis: {
             visible: false, // Hide the X axis entirely - it's just layout spacing, not physical
             range: [axisX, 10]  // Set a fixed internal coordinate system, with room for the energy axis
@@ -527,9 +530,10 @@ function updatePlots() {
                 showarrow: true,
                 arrowhead: 2,
                 startarrowhead: 2,
-                arrowsize: 1.5,
-                startarrowsize: 1.5,
+                arrowsize: 1,
+                startarrowsize: 1,
                 arrowwidth: 3,
+                standoff: 3, // Stops the tip at the bottom edge of the |3⟩ bar instead of its center
                 arrowcolor: PUMP_COLOR
             },
             // Stokes Arrow (|2⟩ to |3⟩), double-headed
@@ -545,9 +549,10 @@ function updatePlots() {
                 showarrow: true,
                 arrowhead: 2,
                 startarrowhead: 2,
-                arrowsize: 1.5,
-                startarrowsize: 1.5,
+                arrowsize: 1,
+                startarrowsize: 1,
                 arrowwidth: 3,
+                standoff: 3, // Stops the tip at the bottom edge of the |3⟩ bar instead of its center
                 arrowcolor: STOKES_COLOR
             },
             // Pump transition energy label
@@ -576,7 +581,7 @@ function updatePlots() {
                 xref: 'x', yref: 'y',
                 showarrow: true,
                 arrowhead: 2,
-                arrowsize: 1.2,
+                arrowsize: 0.9,
                 arrowwidth: 3,
                 arrowcolor: 'black'
             },
