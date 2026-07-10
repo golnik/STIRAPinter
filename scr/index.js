@@ -453,7 +453,7 @@ function updatePlots() {
             tickcolor: 'black',
             ticklen: 8,
             tickfont: { size: 16 },
-            tickvals: [0, lowerY2, upperY], // Exact energies, so ticks line up with the level bars
+            tickvals: [lowerY1, lowerY2, upperY], // Exact energies, so ticks line up with the level bars
             tickformat: '.2f', // Display with 2 digits after the decimal point
             range: [axisYMin, axisYMax]
         },
