@@ -436,9 +436,15 @@ function updatePlots() {
     // Bounds for the arrow-style energy axis drawn to the left of the diagram.
     // axisX matches the xaxis range's left edge, where Plotly's side:'left'
     // ticks are anchored, so the custom arrow lines up with them.
+    // Padding is based on the level spacing, not the laser bandwidth (bwp) -
+    // otherwise the Pulse Duration slider would rescale the whole diagram
+    // even though it doesn't actually move the energy levels.
     const axisX = -0.5;
-    const axisYMin = lowerY1 - 2*bwp;
-    const axisYMax = upperY + 3.5*bwp;
+    const levelMin = Math.min(lowerY1, lowerY2, upperY);
+    const levelMax = Math.max(lowerY1, lowerY2, upperY);
+    const levelSpan = Math.max(levelMax - levelMin, 0.5);
+    const axisYMin = levelMin - 0.3*levelSpan;
+    const axisYMax = levelMax + 0.45*levelSpan;
 
     // 2. Define the Layout (Arrows and removing axes)
     const layoutIV = {
