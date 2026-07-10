@@ -7,11 +7,11 @@ const evperAU = 27.2114079527e0;
 // Shared spacing so every plot's whitespace around the drawing area matches.
 // Top margin leaves room for the horizontal legend row above the traces;
 // left margin leaves room for the wider y-axis title gap below.
-const PLOT_MARGIN = { l: 70, r: 15, b: 55, t: 45, pad: 10 };
+const PLOT_MARGIN = { l: 70, r: 15, b: 55, t: 52, pad: 10 };
 
 // Draws the legend as a horizontal row above the plotting area, in its
 // reserved top margin, instead of overlapping the data.
-const LEGEND_TOP = { orientation: 'h', x: 0.5, xanchor: 'center', y: 1, yanchor: 'bottom' };
+const LEGEND_TOP = { orientation: 'h', x: 0.5, xanchor: 'center', y: 1, yanchor: 'bottom', font: { size: 18 } };
 
 // Fixed gap between each axis and its title, so the gap doesn't vary with
 // tick label width (Plotly's automatic standoff differs per plot otherwise).
@@ -204,21 +204,21 @@ function updatePlots() {
 
     // Plot I Configurations
     const Gau_p = {
-        x: t_values, y: stagent_p, name: '$\\Omega_P(t)\\cos(\\omega_P t)$',
+        x: t_values, y: stagent_p, name: 'Ω<sub>P</sub>(t)cos(ω<sub>P</sub>t)',
         mode: 'lines', line: {color: 'blue', width: 1.5},
         visible: showCurves
     };
     const Gau_s = {
-        x: t_values, y: stagent_s, name: '$\\Omega_S(t)\\cos(\\omega_S t)$',
+        x: t_values, y: stagent_s, name: 'Ω<sub>S</sub>(t)cos(ω<sub>S</sub>t)',
         mode: 'lines', line: {color: 'red', width: 1.5},
         visible: showCurves
     };
     const Gau_P_Stagnent = {
-        x: t_values, y: no_frequency_p, name: '$\\Omega_P(t)$',
+        x: t_values, y: no_frequency_p, name: 'Ω<sub>P</sub>(t)',
         mode: 'lines', line: {color: 'blue', width: 2.5}
     };
     const Gau_S_Stagnent = {
-        x: t_values, y: no_frequency_s, name: '$\\Omega_S(t)$',
+        x: t_values, y: no_frequency_s, name: 'Ω<sub>S</sub>(t)',
         mode: 'lines', line: {color: 'red', width: 2.5}
     };
 
@@ -239,7 +239,7 @@ function updatePlots() {
     const angles = {
         x: t_values,
         y: angle_va,
-        name: '$\\theta(t)$',
+        name: 'θ(t)',
         mode: 'lines',
         line: {color: 'green', width: 1.5}
     }
@@ -248,14 +248,14 @@ function updatePlots() {
     const Beta_Line = {
         x: t_values,
         y: beta_va,
-        name: '$\\beta$',
+        name: 'β',
         mode: 'lines',
         line: {color: 'grey', width: 1.5, dash: 'dot'}
     }
     const Alpha_Line = {
         x: t_values,
         y: alpha_va,
-        name: '$\\alpha$',
+        name: 'α',
         mode: 'lines',
         line: {color: 'grey', width: 1.5, dash: 'dot'}
     }
@@ -313,29 +313,29 @@ function updatePlots() {
     }
 
        const C1 = {
-        x: tt, y: c1, name: '$|C_1(t)|^2$',
+        x: tt, y: c1, name: '|C<sub>1</sub>(t)|<sup>2</sup>',
         mode: 'lines', line: {color: 'blue', width: 2}
     };
     const C3 = {
-        x: tt, y: c3, name: '$|C_3(t)|^2$',
+        x: tt, y: c3, name: '|C<sub>3</sub>(t)|<sup>2</sup>',
         mode: 'lines', line: {color: 'red', width: 2}
     };
     const C1_RWAs = {
-        x: tt_RWA, y: c1_RWA, name: '$|C_1(t)|^2$ (RWA)',
+        x: tt_RWA, y: c1_RWA, name: '|C<sub>1</sub>(t)|<sup>2</sup> (RWA)',
         mode: 'lines', line: {color: 'orange', width: 2, dash: 'dot'},
         visible: showCurves
     };
     const C3_RWAs = {
-        x: tt_RWA, y: c3_RWA, name: '$|C_3(t)|^2$ (RWA)',
+        x: tt_RWA, y: c3_RWA, name: '|C<sub>3</sub>(t)|<sup>2</sup> (RWA)',
         mode: 'lines', line: {color: 'purple', width: 2, dash: 'dot'},
         visible: showCurves
     };
     // const C_init = {
-    //     x: t_fq, y: init_pop, name: '$C_0$',
+    //     x: t_fq, y: init_pop, name: 'C<sub>0</sub>',
     //     mode:'lines', line:{color: 'black', width: 2, dash: 'dashed'}
     // };
     // const C_final = {
-    //     x: t_lq, y: final_pop, name: '$C_F$',
+    //     x: t_lq, y: final_pop, name: 'C<sub>F</sub>',
     //     mode:'lines', line:{color: 'black', width:2, dash:'dashed'}
     // };
 
