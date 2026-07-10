@@ -5,12 +5,20 @@ const evperAU = 27.2114079527e0;
 
 
 // Shared spacing so every plot's whitespace around the drawing area matches.
-// Top margin leaves room for the horizontal legend row above the traces.
-const PLOT_MARGIN = { l: 55, r: 15, b: 55, t: 45, pad: 10 };
+// Top margin leaves room for the horizontal legend row above the traces;
+// left margin leaves room for the wider y-axis title gap below.
+const PLOT_MARGIN = { l: 70, r: 15, b: 55, t: 45, pad: 10 };
 
 // Draws the legend as a horizontal row above the plotting area, in its
 // reserved top margin, instead of overlapping the data.
 const LEGEND_TOP = { orientation: 'h', x: 0.5, xanchor: 'center', y: 1, yanchor: 'bottom' };
+
+// Fixed gap between each axis and its title, so the gap doesn't vary with
+// tick label width (Plotly's automatic standoff differs per plot otherwise).
+// The y-axis gets a larger gap since its tick labels sit between the axis
+// line and the title.
+const AXIS_TITLE_STANDOFF_X = 15;
+const AXIS_TITLE_STANDOFF_Y = 30;
 
 const defaultValues = {
     C0: 0.25,
@@ -220,8 +228,8 @@ function updatePlots() {
     const layout = {
         font: { family: "'STIX Two Text', serif",
             size: 14},
-        xaxis: {title: {text: 'Time (fs)'}},
-        yaxis: {title: {text: 'Amplitude'}, range: [-2*test.Op,2*test.Op]},
+        xaxis: {title: {text: 'Time (fs)', standoff: AXIS_TITLE_STANDOFF_X}},
+        yaxis: {title: {text: 'Amplitude', standoff: AXIS_TITLE_STANDOFF_Y}, range: [-2*test.Op,2*test.Op]},
         showlegend: true,
         legend: LEGEND_TOP,
         margin: PLOT_MARGIN
@@ -258,8 +266,8 @@ function updatePlots() {
     const layoutII = {
         font: { family: "'STIX Two Text', serif",
             size: 14},
-        xaxis: {title: {text: 'Time (fs)'}},
-        yaxis: {title: {text: 'Angle (rad)'}, range: [0.0, 0.55]},
+        xaxis: {title: {text: 'Time (fs)', standoff: AXIS_TITLE_STANDOFF_X}},
+        yaxis: {title: {text: 'Angle (rad)', standoff: AXIS_TITLE_STANDOFF_Y}, range: [0.0, 0.55]},
         showlegend: true,
         legend: LEGEND_TOP,
         annotations: [
@@ -337,8 +345,8 @@ function updatePlots() {
     const layoutIII = {
         font: {family: "'STIX Two Text', serif",
             size: 14},
-        xaxis: {title: {text: 'Time (fs)'}},
-        yaxis: {title: {text: 'Probability'}, range: [0, 1.2]},
+        xaxis: {title: {text: 'Time (fs)', standoff: AXIS_TITLE_STANDOFF_X}},
+        yaxis: {title: {text: 'Probability', standoff: AXIS_TITLE_STANDOFF_Y}, range: [0, 1.2]},
         showlegend: true,
         legend: LEGEND_TOP,
         annotations: [
