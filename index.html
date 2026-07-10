@@ -81,13 +81,15 @@
                     <h3>Laser Parameters</h3>
                     <i class="fas fa-info-circle" onmouseenter="show_info('info_box_laser')" onmouseleave="hide_info('info_box_laser')"></i>
                     <div class="info_box" id="info_box_laser" style="display: none;">
-                        <p> Detuning shifts both laser frequencies away from resonance by the same amount. Pulse Duration sets how long each Gaussian laser pulse lasts. </p>
+                        <p> Detuning shifts both laser frequencies away from resonance by the same amount. Pulse Duration sets how long each Gaussian laser pulse lasts. Position sets the time separation between the Pump and Stokes pulses, following the counter-intuitive pulse ordering used in STIRAP. </p>
                     </div>
                 </div>
                 <label>Detuning (eV): <span id="detuning0_Value">0</span></label>
                 <input type="range" id="detuning0" step="0.1" min="-0.5" max="0.5" value="0">
                 <label> Pulse Duration (fs): <span id='duration_Value'>12</span></label>
                 <input type="range" id="duration" step="0.1" min="10" max="20" value="12">
+                <label>Position (ts): <span id="t_s_Value">62</span></label>
+                <input type="range" id="t_s" step="0.1" min="0" max="100" value="62">
             </div>
 
 
@@ -101,25 +103,12 @@
                 </div>
                 <label>Initial Time (t0)</label>
                 <input type="number" id="time0" step="1" min="0" value="0">
-               
+
                 <label>Final Time (tf)</label>
                 <input type="number" id="timef" step="1" min="100" max="500" value="100">
-               
+
                 <label>Total Time: <span id="total_time_Value">100</span></label>
                 <input type="range" id="total_time" step="1" min="0" max="100" value="100">
-            </div>
-
-
-            <div class="param-group">
-                <div class="param-group-header">
-                    <h3>Position Parameters</h3>
-                    <i class="fas fa-info-circle" onmouseenter="show_info('info_box_position')" onmouseleave="hide_info('info_box_position')"></i>
-                    <div class="info_box" id="info_box_position" style="display: none;">
-                        <p> Sets the time separation between the Pump and Stokes pulses, following the counter-intuitive pulse ordering used in STIRAP. </p>
-                    </div>
-                </div>
-                <label>Position (ts): <span id="t_s_Value">62</span></label>
-                <input type="range" id="t_s" step="0.1" min="0" max="100" value="62">
             </div>
 
 
