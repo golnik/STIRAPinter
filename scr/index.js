@@ -72,8 +72,8 @@ document.getElementById("default").onclick = function resetToDefaults() {
     document.getElementById("total_time_Value").textContent = defaultValues.total_time;
     document.getElementById("detuning0_Value").textContent = defaultValues.detuning0;
     document.getElementById("duration_Value").textContent = defaultValues.duration;
-    document.getElementById("C0_Value").textContent = defaultValues.C0;
-    document.getElementById("CF_Value").textContent = defaultValues.CF;
+    document.getElementById("C0_Value").textContent = defaultValues.C0.toFixed(2);
+    document.getElementById("CF_Value").textContent = defaultValues.CF.toFixed(2);
     document.getElementById("t_s_Value").textContent = defaultValues.t_s;
 
 
@@ -106,7 +106,9 @@ const outputs = {
 // Update displayed values dynamically
 Object.keys(sliders).forEach(key => {
     sliders[key].addEventListener("input", function() {
-        outputs[key].textContent = this.value;
+        outputs[key].textContent = (key === "C0" || key === "CF")
+            ? parseFloat(this.value).toFixed(2)
+            : this.value;
     });
 });
 
