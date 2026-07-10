@@ -65,9 +65,16 @@
     background: var(--color-primary-light);
 }
 
+html {
+    height: 100%;
+}
+
 body {
     margin: 0;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     font-family: var(--font-sans);
     color: var(--color-ink);
     background-color: var(--color-bg);
@@ -76,29 +83,32 @@ body {
 }
 
 /* =========================================================================
-   About button (temporary placement — navbar removed)
+   Control panel header / About button
    ========================================================================= */
 
+.parameters-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
 .aboutButton {
-    position: fixed;
-    top: 16px;
-    right: 20px;
-    z-index: 5;
     flex-shrink: 0;
     width: auto;
-    height: 34px;
-    padding: 0 18px;
+    height: 30px;
+    padding: 0 14px;
     border-radius: 999px;
     border: 1px solid var(--color-border-strong);
-    background: var(--color-surface);
+    background: var(--color-surface-alt);
     color: var(--color-primary-dark);
     font-family: var(--font-sans);
     font-weight: 600;
-    font-size: 13px;
+    font-size: 12px;
     letter-spacing: 0.4px;
     text-transform: uppercase;
     cursor: pointer;
-    box-shadow: var(--shadow-card);
+    box-shadow: none;
     transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
 }
 
@@ -107,7 +117,7 @@ body {
     background: var(--color-primary);
     color: #ffffff;
     border-color: var(--color-primary);
-    box-shadow: var(--shadow-card-hover);
+    box-shadow: var(--shadow-xs);
 }
 
 /* =========================================================================
@@ -193,8 +203,12 @@ body {
     align-items: stretch;
     gap: 24px;
     max-width: 1800px;
-    margin: 24px auto;
-    padding: 40px 20px 0;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+    flex: 1;
+    min-height: 0;
 }
 
 
@@ -211,7 +225,8 @@ body {
     flex-direction: column;
     gap: 20px;
     box-sizing: border-box;
-    height: fit-content;
+    height: 100%;
+    overflow-y: auto;
 }
 
 
@@ -299,6 +314,8 @@ body {
     flex-direction: column;
     gap: 20px;
     min-width: 0; /* Prevents flexbox escaping boundaries */
+    height: 100%;
+    min-height: 0;
 }
 
 
@@ -308,12 +325,15 @@ body {
     flex-direction: row;
     gap: 20px;
     width: 100%;
+    flex: 1;
+    min-height: 0;
 }
 
 .graph-card {
     position: relative;
     flex: 1;
     min-width: 0;
+    min-height: 0;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
@@ -328,6 +348,8 @@ body {
 
 .graph-container {
     position: relative;
+    width: 100%;
+    height: 100%;
     border-radius: var(--radius);
     padding: 10px;
     box-sizing: border-box;
@@ -339,36 +361,18 @@ body {
     display: flex;
     flex-direction: row;        /* Forces children to sit side-by-side */
     justify-content: space-between;
-    align-items: center;        /* Aligns them vertically in the center */
+    align-items: stretch;       /* Matches heights of both cards */
     gap: 20px;                  /* Adds space between the two graphs */
     width: 100%;
+    flex: 1;
+    min-height: 0;
 }
 
 
 .second_line_graphs > div {
     flex: 1;                    /* Makes both graphs take up equal 50/50 space */
     min-width: 0;               /* Critical fix: prevents Plotly from overflowing the flexbox */
-}
-
-
-/* Ensure top plots are equal size */
-#plot, #plotII {
-    flex: 1;
-    min-width: 0;
-    height: 450px;
-}
-
-
-/* Bottom plot stretches fully */
-.large-graph {
-    width: 100%;
-    height: 500px;
-}
-
-
-#plotIII {
-    flex: 3;
-    min-width: 0; /* Prevents Plotly from breaking the flexbox */
+    min-height: 0;
 }
 
 
@@ -383,8 +387,7 @@ body {
     width: 100%;
     max-width: 100%;
     min-width: 0;
-    height: 500px !important;
-    min-height: 500px !important;
+    height: 100%;
     display: block;
 }
 
@@ -570,13 +573,37 @@ button:active {
    ========================================================================= */
 
 @media (max-width: 1100px) {
+    /* Below this width there isn't room to fit the panel + 4 charts in one
+       screen, so fall back to a normal scrolling page. */
+    body {
+        height: auto;
+        overflow: visible;
+    }
+
     .box {
         flex-direction: column;
+        flex: none;
+        height: auto;
     }
 
     .parameters {
         width: 100%;
         min-width: 0;
+        height: auto;
+        overflow-y: visible;
+    }
+
+    .graphs {
+        height: auto;
+    }
+
+    .first_line_graphs,
+    .second_line_graphs {
+        flex: none;
+    }
+
+    .graph-card {
+        min-height: 340px;
     }
 }
 
