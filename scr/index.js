@@ -29,7 +29,10 @@ const defaultValues = {
     duration: 12,
     time0: 0,
     timef: 100,
-    toggle_curves: true
+    toggle_curves: true,
+    E1: 0,
+    E2: 5.266919,
+    E3: 1.306423
 };
 
 
@@ -138,8 +141,11 @@ function updatePlots() {
     const C_0 = parseFloat(document.getElementById("C0").value);
     const C_F = parseFloat(document.getElementById("CF").value);
     const showCurves = document.getElementById("toggle_curves").checked;
-   
-    let test = Gaussion_Values(tp_inp, ts_inp, C_0, C_F, delta_0, gboth);
+    const E1_inp = parseFloat(document.getElementById("E1").value);
+    const E2_inp = parseFloat(document.getElementById("E2").value);
+    const E3_inp = parseFloat(document.getElementById("E3").value);
+
+    let test = Gaussion_Values(tp_inp, ts_inp, C_0, C_F, delta_0, gboth, E1_inp, E2_inp, E3_inp);
     let Delta = delta_creation(test.E1, test.E2, test.E3, test.wp, test.ws);
 
 
@@ -610,19 +616,22 @@ function updatePlots() {
 
 
 // Math/Physics Helpers
-function Gaussion_Values(tp, ts, C0, CF,det,gboth) {
+// E1, E2, E3 are the user-adjustable level positions (eV). wp/ws (the pump/Stokes
+// laser frequencies) stay resonant with the E2-E1 and E2-E3 spacing plus the
+// user's detuning, so moving a level automatically retunes the lasers to match.
+function Gaussion_Values(tp, ts, C0, CF, det, gboth, E1, E2, E3) {
     return {
         Os: Math.sqrt((5.803548e11)*(4.33**2)/auI),
         ts: ts/fsperau,
         gs: gboth/fsperau * 1/Math.sqrt(2*Math.log(2.0)),
-        ws: (3.960496+det)/evperAU,
+        ws: (E2-E3+det)/evperAU,
         Op: Math.sqrt((5.803548e11)*(4.33**2)/auI),
         tp: tp/fsperau,
         gp: gboth/fsperau * 1/Math.sqrt(2*Math.log(2.0)),
-        wp: (5.266919+det)/evperAU,
-        E1: 0,
-        E2: 5.266919/evperAU,
-        E3: 1.306423/evperAU,
+        wp: (E2-E1+det)/evperAU,
+        E1: E1/evperAU,
+        E2: E2/evperAU,
+        E3: E3/evperAU,
         mu12: 1,
         mu23: -1,
         alpha: Math.acos(Math.sqrt(C0)),
@@ -703,7 +712,7 @@ function population_calculations_RWA(test) {
 
 
 // Event Listeners for completely dynamic updating
-const inputsToWatch = ["C0", "CF", "t_s", "total_time", "detuning0", "duration", "time0", "timef", "toggle_curves"];
+const inputsToWatch = ["C0", "CF", "t_s", "total_time", "detuning0", "duration", "time0", "timef", "toggle_curves", "E1", "E2", "E3"];
 
 
 // Apply a 300ms debounce to prevent the UI from freezing when rapidly sliding
