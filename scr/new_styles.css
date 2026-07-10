@@ -342,12 +342,11 @@ body {
     box-shadow: var(--shadow-card);
     padding: 12px 14px;
     box-sizing: border-box;
-    transition: box-shadow 0.25s ease, transform 0.25s ease;
+    transition: box-shadow 0.25s ease;
 }
 
 .graph-card:hover {
     box-shadow: var(--shadow-card-hover);
-    transform: translateY(-1px);
 }
 
 .graph-container {
