@@ -141,7 +141,11 @@
 
             <div class="param-group toggle-group">
                 <input type="checkbox" id="toggle_curves" checked>
-                <label for="toggle_curves" style="cursor: pointer; font-weight: bold;">Show Frequency Pulse & RWA Curves</label>
+                <label for="toggle_curves" style="cursor: pointer; font-weight: bold;">Show Exact Solution</label>
+                <i class="fas fa-info-circle" onmouseenter="show_info('info_box_exact_solution')" onmouseleave="hide_info('info_box_exact_solution')"></i>
+                <div class="info_box" id="info_box_exact_solution" style="display: none;">
+                    <p> Toggles the exact (non-rotating-wave) $|C_1(t)|^2$ and $|C_3(t)|^2$ population curves, along with the oscillating (carrier-frequency) Pump and Stokes fields in the Envelope and Pulse Functions plot. The RWA curves stay visible either way.</p>
+                </div>
             </div>
 
             <button id="default" class="panel-action-button"> Default Values </button>

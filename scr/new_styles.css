@@ -313,6 +313,7 @@ body {
 .toggle-group {
     flex-direction: row;
     align-items: center;
+    position: relative;
     background: var(--color-surface-alt);
     padding: 12px 16px;
     border-radius: var(--radius-sm);
@@ -330,6 +331,19 @@ body {
     height: 18px;
     accent-color: var(--color-primary);
     cursor: pointer;
+}
+
+
+.toggle-group i {
+    margin-left: auto;
+    color: var(--color-ink-faint);
+    font-size: 13px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.toggle-group i:hover {
+    color: var(--color-primary);
 }
 
 

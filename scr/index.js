@@ -320,21 +320,21 @@ function updatePlots() {
 
        const C1 = {
         x: tt, y: c1, name: '|C<sub>1</sub>(t)|<sup>2</sup>',
-        mode: 'lines', line: {color: 'blue', width: 2}
+        mode: 'lines', line: {color: 'blue', width: 2},
+        visible: showCurves
     };
     const C3 = {
         x: tt, y: c3, name: '|C<sub>3</sub>(t)|<sup>2</sup>',
-        mode: 'lines', line: {color: 'red', width: 2}
+        mode: 'lines', line: {color: 'red', width: 2},
+        visible: showCurves
     };
     const C1_RWAs = {
         x: tt_RWA, y: c1_RWA, name: '|C<sub>1</sub>(t)|<sup>2</sup> (RWA)',
-        mode: 'lines', line: {color: 'orange', width: 2, dash: 'dot'},
-        visible: showCurves
+        mode: 'lines', line: {color: 'orange', width: 2, dash: 'dot'}
     };
     const C3_RWAs = {
         x: tt_RWA, y: c3_RWA, name: '|C<sub>3</sub>(t)|<sup>2</sup> (RWA)',
-        mode: 'lines', line: {color: 'purple', width: 2, dash: 'dot'},
-        visible: showCurves
+        mode: 'lines', line: {color: 'purple', width: 2, dash: 'dot'}
     };
     // const C_init = {
     //     x: t_fq, y: init_pop, name: 'C<sub>0</sub>',
