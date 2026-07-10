@@ -10,6 +10,18 @@
     <link href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
    
     <link rel="stylesheet" href="scr/new_styles.css">
+    <script>
+        // Renders LaTeX ($...$) in regular page text (info boxes, modal, etc.).
+        // Not used inside the Plotly plots themselves - their legends use
+        // <sub>/<sup> instead, since MathJax's SVG output isn't measured
+        // correctly by Plotly's legend layout in Firefox.
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+            },
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" defer></script>
     <script src="https://cdn.plot.ly/plotly-3.6.0.min.js" charset="utf-8"></script>
     <script src="https://cdn.plot.ly/plotly-3.3.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js"></script>
@@ -41,20 +53,32 @@
 
 
             <div class="param-group">
-                <h3>Energy Levels (eV)</h3>
-                <label>E<sub>1</sub></label>
+                <div class="param-group-header">
+                    <h3>Energy Levels</h3>
+                    <i class="fas fa-info-circle" onmouseenter="show_info('info_box_energy_levels')" onmouseleave="hide_info('info_box_energy_levels')"></i>
+                    <div class="info_box" id="info_box_energy_levels" style="display: none;">
+                        <p> Sets the absolute energies $E_1$, $E_2$, and $E_3$ of levels $|1\rangle$, $|2\rangle$, and $|3\rangle$, respectively.</p>
+                    </div>
+                </div>
+                <label>E<sub>1</sub> (eV)</label>
                 <input type="number" id="E1" step="0.05" value="0">
 
-                <label>E<sub>2</sub></label>
+                <label>E<sub>2</sub> (eV)</label>
                 <input type="number" id="E2" step="0.05" value="5.266919">
 
-                <label>E<sub>3</sub></label>
+                <label>E<sub>3</sub> (eV)</label>
                 <input type="number" id="E3" step="0.05" value="1.306423">
             </div>
 
 
             <div class="param-group">
-                <h3>Laser Parameters</h3>
+                <div class="param-group-header">
+                    <h3>Laser Parameters</h3>
+                    <i class="fas fa-info-circle" onmouseenter="show_info('info_box_laser')" onmouseleave="hide_info('info_box_laser')"></i>
+                    <div class="info_box" id="info_box_laser" style="display: none;">
+                        <p> Detuning shifts both laser frequencies away from resonance by the same amount. Pulse Duration sets how long each Gaussian laser pulse lasts. </p>
+                    </div>
+                </div>
                 <label>Detuning (eV): <span id="detuning0_Value">0</span></label>
                 <input type="range" id="detuning0" step="0.1" min="-0.5" max="0.5" value="0">
                 <label> Pulse Duration (fs): <span id='duration_Value'>12</span></label>
@@ -63,7 +87,13 @@
 
 
             <div class="param-group">
-                <h3>Time Parameters</h3>
+                <div class="param-group-header">
+                    <h3>Time Parameters</h3>
+                    <i class="fas fa-info-circle" onmouseenter="show_info('info_box_time')" onmouseleave="hide_info('info_box_time')"></i>
+                    <div class="info_box" id="info_box_time" style="display: none;">
+                        <p> Sets the simulation's time window (t0 to tf) and how much of that window the plots display. </p>
+                    </div>
+                </div>
                 <label>Initial Time (t0)</label>
                 <input type="number" id="time0" step="1" min="0" value="0">
                
@@ -76,14 +106,26 @@
 
 
             <div class="param-group">
-                <h3>Position Parameters</h3>
+                <div class="param-group-header">
+                    <h3>Position Parameters</h3>
+                    <i class="fas fa-info-circle" onmouseenter="show_info('info_box_position')" onmouseleave="hide_info('info_box_position')"></i>
+                    <div class="info_box" id="info_box_position" style="display: none;">
+                        <p> Sets the time separation between the Pump and Stokes pulses, following the counter-intuitive pulse ordering used in STIRAP. </p>
+                    </div>
+                </div>
                 <label>Position (ts): <span id="t_s_Value">62</span></label>
                 <input type="range" id="t_s" step="0.1" min="0" max="100" value="62">
             </div>
 
 
             <div class="param-group">
-                <h3>Population Controls</h3>
+                <div class="param-group-header">
+                    <h3>Population Controls</h3>
+                    <i class="fas fa-info-circle" onmouseenter="show_info('info_box_population')" onmouseleave="hide_info('info_box_population')"></i>
+                    <div class="info_box" id="info_box_population" style="display: none;">
+                        <p> Sets the initial and final population fractions, which define the mixing angles $\alpha$ and $\beta$ used to prepare the system. </p>
+                    </div>
+                </div>
                 <label>C Initial: <span id="C0_Value">0.25</span></label>
                 <input type="range" id="C0" step="0.01" min="0" max="1" value="0.25" class="slider">
                
@@ -108,7 +150,7 @@
                         <span class="graph-title">Envelope and Pulse Functions</span>
                         <i class="fas fa-info-circle" onmouseenter="show_info('Laser_Pulse_box')" onmouseleave="hide_info('Laser_Pulse_box')"></i>
                         <div class="info_box" id="Laser_Pulse_box" style="display: none;">
-                            <p> This represents the OmegaP & OmegaS laser pulses we used in our simulation in order to transfer a population of electrons within the 3-level system. From level |1> to level |3> without interfering or touching the intermediate state |2>.  </p>
+                            <p> This represents the $\Omega_P$ & $\Omega_S$ laser pulses we used in our simulation in order to transfer a population of electrons within the 3-level system. From level $|1\rangle$ to level $|3\rangle$ without interfering or touching the intermediate state $|2\rangle$.  </p>
                         </div>
                     </div>
                     <div id="plot" class="graph-container"></div>
@@ -119,7 +161,7 @@
                         <span class="graph-title">Angle</span>
                         <i class="fas fa-info-circle" onmouseenter="show_info('Angle_box')" onmouseleave="hide_info('Angle_box')"></i>
                         <div class="info_box" id="Angle_box" style="display: none;">
-                            <p> This shows the angle of the diffrence between the OmegaP & OmegaS laser pulses. </p>
+                            <p> This shows the angle of the diffrence between the $\Omega_P$ & $\Omega_S$ laser pulses. </p>
                         </div>
                     </div>
                     <div id="plotII" class="graph-container"></div>
@@ -141,7 +183,7 @@
                         <span class="graph-title">Populations</span>
                         <i class="fas fa-info-circle" onmouseenter="show_info('info_box_t')" onmouseleave="hide_info('info_box_t')"></i>
                         <div class="info_box" id="info_box_t" style="display: none;">
-                            <p> This represents how the population of level |1> & level |3> changes over time, as well as the probability of the electron being present in that level depending on the time.  </p>
+                            <p> This represents how the population of level $|1\rangle$ & level $|3\rangle$ changes over time, as well as the probability of the electron being present in that level depending on the time.  </p>
                         </div>
                     </div>
                     <div id="plotIII" class="graph-container large-graph"></div>

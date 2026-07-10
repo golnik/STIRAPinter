@@ -251,6 +251,32 @@ body {
 }
 
 
+.param-group-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    position: relative;
+}
+
+.param-group-header h3 {
+    margin: 0 0 10px 0;
+}
+
+.param-group-header i {
+    margin-bottom: 10px;
+    color: var(--color-ink-faint);
+    font-size: 13px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.param-group-header i:hover {
+    color: var(--color-primary);
+}
+
+
 .parameters hr {
     border: none;
     border-top: 1px solid var(--color-border);
