@@ -153,8 +153,8 @@ function updatePlots() {
 
 
     const t_values = [];
-    const t_fq = [];
-    const t_lq = [];
+    // const t_fq = [];
+    // const t_lq = [];
     const stagent_p = [];
     const stagent_s = [];
     const no_frequency_p = [];
@@ -162,12 +162,12 @@ function updatePlots() {
     const angle_va = [];
     const beta_va = [];
     const alpha_va = [];
-    const init_pop = [];
-    const final_pop = [];
-   
+    // const init_pop = [];
+    // const final_pop = [];
+
     const steps = 2000;
-    const steps_fq = parseInt(steps/4);
-    const steps_lq = parseInt(3/4 * steps);
+    // const steps_fq = parseInt(steps/4);
+    // const steps_lq = parseInt(3/4 * steps);
     const dt = (test.tf - test.t0) / steps;
 
 
@@ -191,17 +191,15 @@ function updatePlots() {
         alpha_va.push(Math.acos(Math.sqrt(C_0))/Math.PI);
         beta_va.push(Math.acos(Math.sqrt(C_F))/Math.PI);
 
+        // if(i<=steps_fq){
+        //     t_fq.push(t*fsperau);
+        //     init_pop.push(C_0);
+        // }
 
-        if(i<=steps_fq){
-            t_fq.push(t*fsperau);
-            init_pop.push(C_0);
-        }
-
-
-        if(i>steps_lq){
-            t_lq.push(t*fsperau);
-            final_pop.push(C_F);
-        }
+        // if(i>steps_lq){
+        //     t_lq.push(t*fsperau);
+        //     final_pop.push(C_F);
+        // }
     }
 
     // Plot I Configurations
@@ -332,14 +330,14 @@ function updatePlots() {
         mode: 'lines', line: {color: 'purple', width: 2, dash: 'dot'},
         visible: showCurves
     };
-    const C_init = {
-        x: t_fq, y: init_pop, name: '$C_0$',
-        mode:'lines', line:{color: 'black', width: 2, dash: 'dashed'}
-    };
-    const C_final = {
-        x: t_lq, y: final_pop, name: '$C_F$',
-        mode:'lines', line:{color: 'black', width:2, dash:'dashed'}
-    };
+    // const C_init = {
+    //     x: t_fq, y: init_pop, name: '$C_0$',
+    //     mode:'lines', line:{color: 'black', width: 2, dash: 'dashed'}
+    // };
+    // const C_final = {
+    //     x: t_lq, y: final_pop, name: '$C_F$',
+    //     mode:'lines', line:{color: 'black', width:2, dash:'dashed'}
+    // };
 
 
     const layoutIII = {
@@ -369,7 +367,8 @@ function updatePlots() {
         ],
         margin: PLOT_MARGIN
     };
-    Plotly.react('plotIII', [C1, C3, C1_RWAs, C3_RWAs,C_init,C_final], layoutIII, {responsive: true, displayModeBar: false });
+    // C_init and C_final (commented out above) omitted from the population diagram.
+    Plotly.react('plotIII', [C1, C3, C1_RWAs, C3_RWAs], layoutIII, {responsive: true, displayModeBar: false });
     
     //Plot IIII Configurations
     const upperY = test.E2 * evperAU;
