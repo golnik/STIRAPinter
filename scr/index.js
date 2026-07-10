@@ -4,6 +4,22 @@ const auI = 3.50944e16;
 const evperAU = 27.2114079527e0;
 
 
+// Shared spacing so every plot's whitespace around the drawing area matches.
+// Top margin leaves room for the horizontal legend row above the traces;
+// left margin leaves room for the wider y-axis title gap below.
+const PLOT_MARGIN = { l: 70, r: 15, b: 55, t: 52, pad: 10 };
+
+// Draws the legend as a horizontal row above the plotting area, in its
+// reserved top margin, instead of overlapping the data.
+const LEGEND_TOP = { orientation: 'h', x: 0.5, xanchor: 'center', y: 1, yanchor: 'bottom', font: { size: 18 } };
+
+// Fixed gap between each axis and its title, so the gap doesn't vary with
+// tick label width (Plotly's automatic standoff differs per plot otherwise).
+// The y-axis gets a larger gap since its tick labels sit between the axis
+// line and the title.
+const AXIS_TITLE_STANDOFF_X = 15;
+const AXIS_TITLE_STANDOFF_Y = 30;
+
 const defaultValues = {
     C0: 0.25,
     CF: 0,
@@ -13,7 +29,10 @@ const defaultValues = {
     duration: 12,
     time0: 0,
     timef: 100,
-    toggle_curves: true
+    toggle_curves: true,
+    E1: 0,
+    E2: 5.266919,
+    E3: 1.306423
 };
 
 
@@ -122,8 +141,11 @@ function updatePlots() {
     const C_0 = parseFloat(document.getElementById("C0").value);
     const C_F = parseFloat(document.getElementById("CF").value);
     const showCurves = document.getElementById("toggle_curves").checked;
-   
-    let test = Gaussion_Values(tp_inp, ts_inp, C_0, C_F, delta_0, gboth);
+    const E1_inp = parseFloat(document.getElementById("E1").value);
+    const E2_inp = parseFloat(document.getElementById("E2").value);
+    const E3_inp = parseFloat(document.getElementById("E3").value);
+
+    let test = Gaussion_Values(tp_inp, ts_inp, C_0, C_F, delta_0, gboth, E1_inp, E2_inp, E3_inp);
     let Delta = delta_creation(test.E1, test.E2, test.E3, test.wp, test.ws);
 
 
@@ -137,8 +159,8 @@ function updatePlots() {
 
 
     const t_values = [];
-    const t_fq = [];
-    const t_lq = [];
+    // const t_fq = [];
+    // const t_lq = [];
     const stagent_p = [];
     const stagent_s = [];
     const no_frequency_p = [];
@@ -146,12 +168,12 @@ function updatePlots() {
     const angle_va = [];
     const beta_va = [];
     const alpha_va = [];
-    const init_pop = [];
-    const final_pop = [];
-   
+    // const init_pop = [];
+    // const final_pop = [];
+
     const steps = 2000;
-    const steps_fq = parseInt(steps/4);
-    const steps_lq = parseInt(3/4 * steps);
+    // const steps_fq = parseInt(steps/4);
+    // const steps_lq = parseInt(3/4 * steps);
     const dt = (test.tf - test.t0) / steps;
 
 
@@ -175,48 +197,47 @@ function updatePlots() {
         alpha_va.push(Math.acos(Math.sqrt(C_0))/Math.PI);
         beta_va.push(Math.acos(Math.sqrt(C_F))/Math.PI);
 
+        // if(i<=steps_fq){
+        //     t_fq.push(t*fsperau);
+        //     init_pop.push(C_0);
+        // }
 
-        if(i<=steps_fq){
-            t_fq.push(t*fsperau);
-            init_pop.push(C_0);
-        }
-
-
-        if(i>steps_lq){
-            t_lq.push(t*fsperau);
-            final_pop.push(C_F);
-        }
+        // if(i>steps_lq){
+        //     t_lq.push(t*fsperau);
+        //     final_pop.push(C_F);
+        // }
     }
 
     // Plot I Configurations
     const Gau_p = {
-        x: t_values, y: stagent_p, name: 'Pump Frequency Pulse',
+        x: t_values, y: stagent_p, name: 'Ω<sub>P</sub>(t)cos(ω<sub>P</sub>t)',
         mode: 'lines', line: {color: 'blue', width: 1.5},
         visible: showCurves
     };
     const Gau_s = {
-        x: t_values, y: stagent_s, name: 'Stokes Frequency Pulse',
+        x: t_values, y: stagent_s, name: 'Ω<sub>S</sub>(t)cos(ω<sub>S</sub>t)',
         mode: 'lines', line: {color: 'red', width: 1.5},
         visible: showCurves
     };
     const Gau_P_Stagnent = {
-        x: t_values, y: no_frequency_p, name: 'Pump Stagnent Pulse',
+        x: t_values, y: no_frequency_p, name: 'Ω<sub>P</sub>(t)',
         mode: 'lines', line: {color: 'blue', width: 2.5}
     };
     const Gau_S_Stagnent = {
-        x: t_values, y: no_frequency_s, name: 'Stokes Stagnent Pulse',
+        x: t_values, y: no_frequency_s, name: 'Ω<sub>S</sub>(t)',
         mode: 'lines', line: {color: 'red', width: 2.5}
     };
 
 
     const layout = {
-        title: {text: 'Envelope and Pulse Functions'},
         font: { family: "'STIX Two Text', serif",
-            size: 14},  
-        xaxis: {title: {text: 'Time (fs)'}},
-        yaxis: {title: {text: 'Amplitude'}, range: [-2*test.Op,2*test.Op]},
-        margin: { t: 40, l: 50, r: 20, b: 40 }
-    };  
+            size: 14},
+        xaxis: {title: {text: 'Time (fs)', standoff: AXIS_TITLE_STANDOFF_X}},
+        yaxis: {title: {text: 'Amplitude', standoff: AXIS_TITLE_STANDOFF_Y}, range: [-2*test.Op,2*test.Op]},
+        showlegend: true,
+        legend: LEGEND_TOP,
+        margin: PLOT_MARGIN
+    };
     Plotly.react('plot', [Gau_p, Gau_s, Gau_P_Stagnent, Gau_S_Stagnent], layout, {responsive: true, displayModeBar: false});
 
 
@@ -224,7 +245,7 @@ function updatePlots() {
     const angles = {
         x: t_values,
         y: angle_va,
-        name: 'Angle',
+        name: 'θ(t)',
         mode: 'lines',
         line: {color: 'green', width: 1.5}
     }
@@ -233,26 +254,26 @@ function updatePlots() {
     const Beta_Line = {
         x: t_values,
         y: beta_va,
-        name: 'Beta',
+        name: 'β',
         mode: 'lines',
         line: {color: 'grey', width: 1.5, dash: 'dot'}
     }
     const Alpha_Line = {
         x: t_values,
         y: alpha_va,
-        name: 'Alpha',
+        name: 'α',
         mode: 'lines',
         line: {color: 'grey', width: 1.5, dash: 'dot'}
     }
    
     // NEW: Updated layoutII to include annotations for the Greek letters
     const layoutII = {
-        title: {text: 'Angle'},
         font: { family: "'STIX Two Text', serif",
             size: 14},
-        xaxis: {title: {text: 'Time (fs)'}},
-        yaxis: {title: {text: 'Angle (rad)'}, range: [0.0, 0.55]},
+        xaxis: {title: {text: 'Time (fs)', standoff: AXIS_TITLE_STANDOFF_X}},
+        yaxis: {title: {text: 'Angle (rad)', standoff: AXIS_TITLE_STANDOFF_Y}, range: [0.0, 0.55]},
         showlegend: true,
+        legend: LEGEND_TOP,
         annotations: [
             {
                 x: 25,         // Set x-axis position to 25fs
@@ -270,7 +291,8 @@ function updatePlots() {
                 yshift: 10,    // Shifts the text slightly above the line
                 font: {size: 16, color: 'black'}
             }
-        ]
+        ],
+        margin: PLOT_MARGIN
     };
 
 
@@ -297,39 +319,40 @@ function updatePlots() {
     }
 
        const C1 = {
-        x: tt, y: c1, name: 'C1',
+        x: tt, y: c1, name: '|C<sub>1</sub>(t)|<sup>2</sup>',
         mode: 'lines', line: {color: 'blue', width: 2}
     };
     const C3 = {
-        x: tt, y: c3, name: 'C3',
+        x: tt, y: c3, name: '|C<sub>3</sub>(t)|<sup>2</sup>',
         mode: 'lines', line: {color: 'red', width: 2}
     };
     const C1_RWAs = {
-        x: tt_RWA, y: c1_RWA, name: 'C1 (RWA)',
+        x: tt_RWA, y: c1_RWA, name: '|C<sub>1</sub>(t)|<sup>2</sup> (RWA)',
         mode: 'lines', line: {color: 'orange', width: 2, dash: 'dot'},
         visible: showCurves
     };
     const C3_RWAs = {
-        x: tt_RWA, y: c3_RWA, name: 'C3 (RWA)',
+        x: tt_RWA, y: c3_RWA, name: '|C<sub>3</sub>(t)|<sup>2</sup> (RWA)',
         mode: 'lines', line: {color: 'purple', width: 2, dash: 'dot'},
         visible: showCurves
     };
-    const C_init = {
-        x: t_fq, y: init_pop, name: 'C_1 initial',
-        mode:'lines', line:{color: 'black', width: 2, dash: 'dashed'}
-    };
-    const C_final = {
-        x: t_lq, y: final_pop, name: 'C_1 final',
-        mode:'lines', line:{color: 'black', width:2, dash:'dashed'}
-    };
+    // const C_init = {
+    //     x: t_fq, y: init_pop, name: 'C<sub>0</sub>',
+    //     mode:'lines', line:{color: 'black', width: 2, dash: 'dashed'}
+    // };
+    // const C_final = {
+    //     x: t_lq, y: final_pop, name: 'C<sub>F</sub>',
+    //     mode:'lines', line:{color: 'black', width:2, dash:'dashed'}
+    // };
 
 
     const layoutIII = {
-        title: {text: 'Populations'},
         font: {family: "'STIX Two Text', serif",
             size: 14},
-        xaxis: {title: {text: 'Time (fs)'}},
-        yaxis: {title: {text: 'Probability'}, range: [0, 1.2]},
+        xaxis: {title: {text: 'Time (fs)', standoff: AXIS_TITLE_STANDOFF_X}},
+        yaxis: {title: {text: 'Probability', standoff: AXIS_TITLE_STANDOFF_Y}, range: [0, 1.2]},
+        showlegend: true,
+        legend: LEGEND_TOP,
         annotations: [
             {
                 x: 25,         // Set x-axis position to 25fs
@@ -348,9 +371,10 @@ function updatePlots() {
                 font: {size: 16, color: 'black'}
             }
         ],
-        margin: { t: 40, l: 50, r: 20, b: 40 }
-    };  
-    Plotly.react('plotIII', [C1, C3, C1_RWAs, C3_RWAs,C_init,C_final], layoutIII, {responsive: true, displayModeBar: false });    
+        margin: PLOT_MARGIN
+    };
+    // C_init and C_final (commented out above) omitted from the population diagram.
+    Plotly.react('plotIII', [C1, C3, C1_RWAs, C3_RWAs], layoutIII, {responsive: true, displayModeBar: false });
     
     //Plot IIII Configurations
     const upperY = test.E2 * evperAU;
@@ -366,14 +390,18 @@ function updatePlots() {
     const bws = 4*Math.sqrt(2*Math.log(2.0))/test.gs * evperAU;
 
 
+    const LEVEL_COLOR = '#4a1420'; // Dark maroon energy-level bars
+    const PUMP_COLOR = '#2255dd';  // Blue: |1⟩ -> |3⟩ (matches Pump color elsewhere)
+    const STOKES_COLOR = '#e74c3c'; // Red: |2⟩ -> |3⟩ (matches Stokes color elsewhere)
+
     const trace1 = {
         x: [1, 3],
         y: [lowerY1, lowerY1],
         mode: 'lines+text',
         text: ['', '|1⟩'], // Label on the right side
         textposition: 'middle right',
-        textfont: { size: 18 },
-        line: { color: '#34495e', width: 4 },
+        textfont: { size: 22 },
+        line: { color: LEVEL_COLOR, width: 5 },
         hoverinfo: 'none',
         showlegend: false
     };
@@ -385,8 +413,8 @@ function updatePlots() {
         mode: 'lines+text',
         text: ['', '|2⟩'],
         textposition: 'middle right',
-        textfont: { size: 18 },
-        line: { color: '#34495e', width: 4 },
+        textfont: { size: 22 },
+        line: { color: LEVEL_COLOR, width: 5 },
         hoverinfo: 'none',
         showlegend: false
     };
@@ -398,32 +426,71 @@ function updatePlots() {
         mode: 'lines+text',
         text: ['', '|3⟩'],
         textposition: 'middle right',
-        textfont: { size: 18 },
-        line: { color: '#34495e', width: 4 },
+        textfont: { size: 22 },
+        line: { color: LEVEL_COLOR, width: 5 },
         hoverinfo: 'none',
         showlegend: false
     };
 
 
+    // Bounds for the arrow-style energy axis drawn to the left of the diagram.
+    // axisX matches the xaxis range's left edge, where Plotly's side:'left'
+    // ticks are anchored, so the custom arrow lines up with them.
+    const axisX = -2;
+    const axisYMin = lowerY1 - 2*bwp;
+    const axisYMax = upperY + 3.5*bwp;
+
     // 2. Define the Layout (Arrows and removing axes)
     const layoutIV = {
-        // Remove margins to maximize the drawing space
-        margin: { t: 10, b: 10, l: 10, r: 10 },
+        font: { family: "'STIX Two Text', serif", size: 14 },
+        // This diagram has no legend row and no visible x-axis, so it doesn't need
+        // PLOT_MARGIN's t/b space reserved for those - shrinking them lets the
+        // diagram fill the card down to the bottom instead of leaving a gap.
+        margin: { ...PLOT_MARGIN, l: 60, pad: 0, t: 30, b: 10 },
         xaxis: {
-            visible: false, // Hide the X axis entirely
-            range: [0, 10]  // Set a fixed internal coordinate system
+            visible: false, // Hide the X axis entirely - it's just layout spacing, not physical
+            range: [axisX, 10]  // Set a fixed internal coordinate system, with room for the energy axis
         },
         yaxis: {
-            visible: false, // Hide the Y axis entirely
-            range: [lowerY1-2*bwp, upperY+3*bwp] // Padding above and below the states
+            visible: true,
+            side: 'left',
+            showline: false, // The arrow annotation below draws the axis line instead
+            zeroline: false,
+            showgrid: false, // Default gridlines span the full plot; using custom rule lines below instead
+            ticks: 'outside',
+            tickwidth: 3,
+            tickcolor: 'black',
+            ticklen: 8,
+            tickfont: { size: 16 },
+            tickvals: [0, lowerY2, upperY], // Exact energies, so ticks line up with the level bars
+            tickformat: '.2f', // Display with 2 digits after the decimal point
+            range: [axisYMin, axisYMax]
         },
         shapes: [
+            // Rule line from the axis to where the |1⟩ level bar starts
+            {
+                type: 'line',
+                x0: axisX, x1: 1, y0: lowerY1, y1: lowerY1,
+                line: { color: '#999999', width: 1, dash: 'dot' }
+            },
+            // Rule line from the axis to where the |3⟩ level bar starts
+            {
+                type: 'line',
+                x0: axisX, x1: 4, y0: upperY, y1: upperY,
+                line: { color: '#999999', width: 1, dash: 'dot' }
+            },
+            // Rule line from the axis to where the |2⟩ level bar starts
+            {
+                type: 'line',
+                x0: axisX, x1: 7, y0: lowerY2, y1: lowerY2,
+                line: { color: '#999999', width: 1, dash: 'dot' }
+            },
             // Pump Laser Bandwidth - Tail (State 1)
             {
                 type: 'rect',
                 x0: 1.5, x1: 2.5,      // Centers the box around the tail at X=2
                 y0: lowerY1-bwp/2, y1: lowerY1+bwp/2,   // The "height" or bandwidth thickness
-                fillcolor: '#e74c3c',
+                fillcolor: PUMP_COLOR,
                 opacity: 0.2,          // Makes it lightly shaded
                 line: { width: 0 }     // Removes the hard border
             },
@@ -432,7 +499,7 @@ function updatePlots() {
                 type: 'rect',
                 x0: 4.1, x1: 4.9,      // Centers around the head at X=4.5
                 y0: lowerY1+freqp-bwp/2, y1: lowerY1+freqp+bwp/2,
-                fillcolor: '#e74c3c',
+                fillcolor: PUMP_COLOR,
                 opacity: 0.2,
                 line: { width: 0 }
             },
@@ -441,7 +508,7 @@ function updatePlots() {
                 type: 'rect',
                 x0: 7.5, x1: 8.5,      // Centers around the tail at X=8
                 y0: lowerY2-bwp/2, y1: lowerY2+bwp/2,
-                fillcolor: '#3498db',
+                fillcolor: STOKES_COLOR,
                 opacity: 0.2,
                 line: { width: 0 }
             },
@@ -450,43 +517,129 @@ function updatePlots() {
                 type: 'rect',
                 x0: 5.1, x1: 5.9,      // Centers around the head at X=5.5
                 y0: lowerY2+freqs-bwp/2, y1: lowerY2+freqs+bwp/2,
-                fillcolor: '#3498db',
+                fillcolor: STOKES_COLOR,
                 opacity: 0.2,
                 line: { width: 0 }
+            },
+            // Pump Arrow connecting line (the arrowheads are drawn as
+            // annotations below - Plotly only guarantees the x/y end of an
+            // annotation arrow lands exactly on target, not the ax/ay end,
+            // so a single double-headed annotation can't be exact at both
+            // ends. Drawing the line as a shape plus two head-only
+            // annotations keeps both tips exact.)
+            {
+                type: 'line',
+                x0: 2, y0: lowerY1, x1: 4.5, y1: lowerY1+freqp,
+                line: { color: PUMP_COLOR, width: 3 }
+            },
+            // Stokes Arrow connecting line
+            {
+                type: 'line',
+                x0: 8, y0: lowerY2, x1: 5.5, y1: lowerY2+freqs,
+                line: { color: STOKES_COLOR, width: 3 }
             }
         ],
         annotations: [
-            // Pump Arrow (|1⟩ to |3⟩)
+            // Pump Arrow head (near |3⟩), exact at the bandwidth box center
             {
-                ax: 2,         // Tail X
-                ay: lowerY1,      // Tail Y (slightly above lower state)
+                ax: 3.25, ay: lowerY1 + freqp/2, // Midpoint - direction reference only
                 axref: 'x',
                 ayref: 'y',
-                x: 4.5,        // Head X
-                y: lowerY1+freqp,       // Head Y (slightly below upper state)
+                x: 4.5,
+                y: lowerY1+freqp,
                 xref: 'x',
                 yref: 'y',
                 showarrow: true,
                 arrowhead: 2,
-                arrowsize: 1.5,
-                arrowwidth: 2,
-                arrowcolor: '#e74c3c' // Red
+                arrowsize: 1,
+                arrowwidth: 3,
+                arrowcolor: PUMP_COLOR
             },
-            // Stokes Arrow (|2⟩ to |3⟩)
+            // Pump Arrow tail (near |1⟩), exact at the bandwidth box center
             {
-                ax: 8,         // Tail X
-                ay: lowerY2,      // Tail Y
+                ax: 3.25, ay: lowerY1 + freqp/2,
                 axref: 'x',
                 ayref: 'y',
-                x: 5.5,        // Head X
-                y: lowerY2+freqs,       // Head Y
+                x: 2,
+                y: lowerY1,
                 xref: 'x',
                 yref: 'y',
                 showarrow: true,
                 arrowhead: 2,
-                arrowsize: 1.5,
-                arrowwidth: 2,
-                arrowcolor: '#3498db' // Blue
+                arrowsize: 1,
+                arrowwidth: 3,
+                arrowcolor: PUMP_COLOR
+            },
+            // Stokes Arrow head (near |3⟩), exact at the bandwidth box center
+            {
+                ax: 6.75, ay: lowerY2 + freqs/2,
+                axref: 'x',
+                ayref: 'y',
+                x: 5.5,
+                y: lowerY2+freqs,
+                xref: 'x',
+                yref: 'y',
+                showarrow: true,
+                arrowhead: 2,
+                arrowsize: 1,
+                arrowwidth: 3,
+                arrowcolor: STOKES_COLOR
+            },
+            // Stokes Arrow tail (near |2⟩), exact at the bandwidth box center
+            {
+                ax: 6.75, ay: lowerY2 + freqs/2,
+                axref: 'x',
+                ayref: 'y',
+                x: 8,
+                y: lowerY2,
+                xref: 'x',
+                yref: 'y',
+                showarrow: true,
+                arrowhead: 2,
+                arrowsize: 1,
+                arrowwidth: 3,
+                arrowcolor: STOKES_COLOR
+            },
+            // Pump transition energy label
+            {
+                x: 3.25, y: lowerY1 + freqp/2,
+                xref: 'x', yref: 'y',
+                text: freqp.toFixed(2) + ' eV',
+                showarrow: false,
+                xshift: -40,
+                font: { size: 16, color: PUMP_COLOR }
+            },
+            // Stokes transition energy label
+            {
+                x: 6.75, y: lowerY2 + freqs/2,
+                xref: 'x', yref: 'y',
+                text: freqs.toFixed(2) + ' eV',
+                showarrow: false,
+                xshift: 40,
+                font: { size: 16, color: STOKES_COLOR }
+            },
+            // Arrow-style energy axis: vertical line with an arrowhead at the top
+            {
+                ax: axisX, ay: axisYMin,
+                axref: 'x', ayref: 'y',
+                x: axisX, y: axisYMax,
+                xref: 'x', yref: 'y',
+                showarrow: true,
+                arrowhead: 2,
+                arrowsize: 0.9,
+                arrowwidth: 3,
+                arrowcolor: 'black'
+            },
+            // Axis label centered above the arrow tip
+            {
+                x: axisX, y: axisYMax,
+                xref: 'x', yref: 'y',
+                text: 'E [eV]',
+                showarrow: false,
+                xanchor: 'center',
+                yanchor: 'bottom',
+                yshift: 8,
+                font: { size: 20, color: 'black' }
             }
         ],
         plot_bgcolor: 'rgba(0,0,0,0)', // Transparent background
@@ -495,26 +648,29 @@ function updatePlots() {
 
 
     // 3. Render the Plot
-    Plotly.newPlot('energyPlot', [trace1, trace2, trace3], layoutIV, {staticPlot: true});
+    Plotly.newPlot('energyPlot', [trace1, trace2, trace3], layoutIV, {staticPlot: true, responsive: true});
 }
 
 
 
 
 // Math/Physics Helpers
-function Gaussion_Values(tp, ts, C0, CF,det,gboth) {
+// E1, E2, E3 are the user-adjustable level positions (eV). wp/ws (the pump/Stokes
+// laser frequencies) stay resonant with the E2-E1 and E2-E3 spacing plus the
+// user's detuning, so moving a level automatically retunes the lasers to match.
+function Gaussion_Values(tp, ts, C0, CF, det, gboth, E1, E2, E3) {
     return {
         Os: Math.sqrt((5.803548e11)*(4.33**2)/auI),
         ts: ts/fsperau,
         gs: gboth/fsperau * 1/Math.sqrt(2*Math.log(2.0)),
-        ws: (3.960496+det)/evperAU,
+        ws: (E2-E3+det)/evperAU,
         Op: Math.sqrt((5.803548e11)*(4.33**2)/auI),
         tp: tp/fsperau,
         gp: gboth/fsperau * 1/Math.sqrt(2*Math.log(2.0)),
-        wp: (5.266919+det)/evperAU,
-        E1: 0,
-        E2: 5.266919/evperAU,
-        E3: 1.306423/evperAU,
+        wp: (E2-E1+det)/evperAU,
+        E1: E1/evperAU,
+        E2: E2/evperAU,
+        E3: E3/evperAU,
         mu12: 1,
         mu23: -1,
         alpha: Math.acos(Math.sqrt(C0)),
@@ -595,7 +751,7 @@ function population_calculations_RWA(test) {
 
 
 // Event Listeners for completely dynamic updating
-const inputsToWatch = ["C0", "CF", "t_s", "total_time", "detuning0", "duration", "time0", "timef", "toggle_curves"];
+const inputsToWatch = ["C0", "CF", "t_s", "total_time", "detuning0", "duration", "time0", "timef", "toggle_curves", "E1", "E2", "E3"];
 
 
 // Apply a 300ms debounce to prevent the UI from freezing when rapidly sliding
@@ -628,15 +784,23 @@ function hide_info(info) {
 
 
 function toggleHelp(){
-    var message =
-   'Welcome to the Stimulated Raman Adiabatic Passage(STIRAP) learning tool!\n\n\
-    Developers: Brayton Bosuku, Miguel Alarcon, Nikoley Golubev\
-    \
-    \
-    This tool demonstrates how STIRAP, which is a way to transfer a population of electrons from one level to the next, \
-    interacts with certain parameters, as well as how changes to these items affect the graph as a whole.  \n\n\
-    Visit https://ngolubev.com/ to see more interactive tools and information related to Quantum Physics!';
+    const overlay = document.getElementById('about-modal-overlay');
+    overlay.style.display = overlay.style.display === 'flex' ? 'none' : 'flex';
+}
 
+// Keeps every plot's pixel size in sync with its (flexbox-driven) card height,
+// so charts resize to fit rather than getting clipped by the card.
+const plotIds = ['plot', 'plotII', 'plotIII', 'energyPlot'];
+function resizeAllPlots() {
+    plotIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) Plotly.Plots.resize(el);
+    });
+}
+window.addEventListener('resize', debounce(resizeAllPlots, 150));
 
-    alert(message);
+// Web fonts finish loading after onload and can shift card heights slightly;
+// resize once more when that settles so plots aren't left mis-sized.
+if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(resizeAllPlots);
 }

@@ -6,9 +6,10 @@
     <title>STIRAP Interactive Project</title>
    
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
    
-    <link rel="stylesheet" href="scr/styles.css">
+    <link rel="stylesheet" href="scr/new_styles.css">
     <script src="https://cdn.plot.ly/plotly-3.6.0.min.js" charset="utf-8"></script>
     <script src="https://cdn.plot.ly/plotly-3.3.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js"></script>
@@ -20,12 +21,36 @@
 <!-- Creates the Parameters that the user may input -->
 <body>
 
+    <div class="about-modal-overlay" id="about-modal-overlay" onclick="if (event.target === this) toggleHelp();">
+        <div class="about-modal-content">
+            <button class="about-modal-close" onclick="toggleHelp()">&times;</button>
+            <p><b>Welcome to the Stimulated Raman Adiabatic Passage (STIRAP) Learning Tool!</b></p>
+            <p><b>Developers: Brayton Bosuku, Miguel Alarcon, Nikolay Golubev</b></p>
+            <p>This tool demonstrates how STIRAP, which is a way to transfer a population of electrons from one level to the next, interacts with certain parameters, as well as how changes to these items affect the graph as a whole.</p>
+            <p>Visit https://ngolubev.com/ to see more interactive tools and information related to Quantum Physics!'</p>
+        </div>
+    </div>
 
-    <button class="button" onclick="toggleHelp()">Help</button>
     <div class="box">
         <div class="parameters">
-            <h2>Control Panel</h2>
+            <div class="parameters-header">
+                <h2>Control Panel</h2>
+                <button class="aboutButton" onclick="toggleHelp()">About</button>
+            </div>
             <hr>
+
+
+            <div class="param-group">
+                <h3>Energy Levels (eV)</h3>
+                <label>E<sub>1</sub></label>
+                <input type="number" id="E1" step="0.05" value="0">
+
+                <label>E<sub>3</sub></label>
+                <input type="number" id="E2" step="0.05" value="5.266919">
+
+                <label>E<sub>2</sub></label>
+                <input type="number" id="E3" step="0.05" value="1.306423">
+            </div>
 
 
             <div class="param-group">
@@ -72,7 +97,7 @@
                 <label for="toggle_curves" style="cursor: pointer; font-weight: bold;">Show Frequency Pulse & RWA Curves</label>
             </div>
 
-            <button id="default"> Default Values </button>
+            <button id="default" class="panel-action-button"> Default Values </button>
         </div>
 
 
@@ -80,27 +105,30 @@
             <div class="first_line_graphs">
                 <div class="graph-card">
                     <div class="Title_graph">
+                        <span class="graph-title">Envelope and Pulse Functions</span>
                         <i class="fas fa-info-circle" onmouseenter="show_info('Laser_Pulse_box')" onmouseleave="hide_info('Laser_Pulse_box')"></i>
                         <div class="info_box" id="Laser_Pulse_box" style="display: none;">
                             <p> This represents the OmegaP & OmegaS laser pulses we used in our simulation in order to transfer a population of electrons within the 3-level system. From level |1> to level |3> without interfering or touching the intermediate state |2>.  </p>
                         </div>
                     </div>
-                    <div id="plot" class="graph-container" style="width:100%; max-width:1000px; height:300px;"></div>
+                    <div id="plot" class="graph-container"></div>
                 </div>
-                
+
                 <div class="graph-card">
                     <div class="Title_graph">
+                        <span class="graph-title">Angle</span>
                         <i class="fas fa-info-circle" onmouseenter="show_info('Angle_box')" onmouseleave="hide_info('Angle_box')"></i>
                         <div class="info_box" id="Angle_box" style="display: none;">
                             <p> This shows the angle of the diffrence between the OmegaP & OmegaS laser pulses. </p>
                         </div>
                     </div>
-                    <div id="plotII" class="graph-container" style="width:100%; max-width:1000px; height:300px;"></div>
+                    <div id="plotII" class="graph-container"></div>
                 </div>
             </div>
             <div class="second_line_graphs">
                 <div class="graph-card">
                     <div class="Title_graph">
+                        <span class="graph-title">Energy-Level Diagram</span>
                         <i class="fas fa-info-circle" onmouseenter="show_info('info_box_energy')" onmouseleave="hide_info('info_box_energy')"></i>
                         <div class="info_box" id="info_box_energy" style="display: none;">
                             <p> This represents the energy-level diagram and the laser couplings used in the STIRAP process. </p>
@@ -110,6 +138,7 @@
                 </div>
                 <div class="graph-card">
                     <div class="Title_graph">
+                        <span class="graph-title">Populations</span>
                         <i class="fas fa-info-circle" onmouseenter="show_info('info_box_t')" onmouseleave="hide_info('info_box_t')"></i>
                         <div class="info_box" id="info_box_t" style="display: none;">
                             <p> This represents how the population of level |1> & level |3> changes over time, as well as the probability of the electron being present in that level depending on the time.  </p>
