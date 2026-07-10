@@ -587,6 +587,14 @@ button:active {
     animation: fadeIn 0.2s ease;
 }
 
+/* This section sits right above the "Default Values" button near the
+   bottom of the sidebar, so its info box has no room to open downward -
+   opening it upward instead keeps it from overflowing past the screen. */
+.toggle-group .info_box {
+    top: auto;
+    bottom: calc(100% + 6px);
+}
+
 .info_box p {
     margin: 0;
 }
