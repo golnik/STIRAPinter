@@ -159,8 +159,6 @@ function updatePlots() {
 
 
     const t_values = [];
-    const t_fq = [];
-    const t_lq = [];
     const stagent_p = [];
     const stagent_s = [];
     const no_frequency_p = [];
@@ -168,12 +166,8 @@ function updatePlots() {
     const angle_va = [];
     const beta_va = [];
     const alpha_va = [];
-    const init_pop = [];
-    const final_pop = [];
 
     const steps = 2000;
-    const steps_fq = parseInt(steps/4);
-    const steps_lq = parseInt(3/4 * steps);
     const dt = (test.tf - test.t0) / steps;
 
 
@@ -196,16 +190,6 @@ function updatePlots() {
         angle_va.push(Math.atan(-stagent_p0 / stagent_s0) / Math.PI);
         alpha_va.push(Math.acos(Math.sqrt(C_0))/Math.PI);
         beta_va.push(Math.acos(Math.sqrt(C_F))/Math.PI);
-
-        if(i<=steps_fq){
-            t_fq.push(t*fsperau);
-            init_pop.push(C_0);
-        }
-
-        if(i>steps_lq){
-            t_lq.push(t*fsperau);
-            final_pop.push(C_F);
-        }
     }
 
     // Plot I Configurations
@@ -329,48 +313,42 @@ function updatePlots() {
         visible: showCurves
     };
     const C1_RWAs = {
-        x: tt_RWA, y: c1_RWA, name: '|C<sub>1</sub>(t)|<sup>2</sup> (RWA)',
+        x: tt_RWA, y: c1_RWA, name: '|C<sub>1</sub><sup>RWA</sup>(t)|<sup>2</sup>',
         mode: 'lines', line: {color: 'orange', width: 2, dash: 'dot'}
     };
     const C3_RWAs = {
-        x: tt_RWA, y: c3_RWA, name: '|C<sub>3</sub>(t)|<sup>2</sup> (RWA)',
+        x: tt_RWA, y: c3_RWA, name: '|C<sub>3</sub><sup>RWA</sup>(t)|<sup>2</sup>',
         mode: 'lines', line: {color: 'purple', width: 2, dash: 'dot'}
     };
+    // Target reference markers (the desired initial/final populations set by
+    // the Population Controls sliders), each in its own well-distinguished
+    // color so they read as targets rather than competing with the computed
+    // dynamics (which use blue/red/orange/purple).
+    const INITIAL_COLOR = '#16a34a';  // Green
+    const FINAL_COLOR = '#db2777';    // Magenta/pink
+    const t_init = tt[0];
+    const t_final = tt[tt.length - 1];
+    // cliponaxis:false keeps these fully visible even though they sit exactly
+    // on the plot's tight time bounds, where they'd otherwise get half-clipped.
     const C_init = {
-        x: t_fq, y: init_pop, name: 'C<sub>0</sub>',
-        mode:'lines', line:{color: 'black', width: 2, dash: 'dashed'}
+        x: [t_init], y: [C_0], name: 'Initial',
+        mode: 'markers', marker: {color: INITIAL_COLOR, size: 9, symbol: 'circle-open', line: {width: 2}},
+        cliponaxis: false
     };
     const C_final = {
-        x: t_lq, y: final_pop, name: 'C<sub>F</sub>',
-        mode:'lines', line:{color: 'black', width:2, dash:'dashed'}
+        x: [t_final], y: [C_F], name: 'Desired Final',
+        mode: 'markers', marker: {color: FINAL_COLOR, size: 9, symbol: 'circle-open', line: {width: 2}},
+        cliponaxis: false
     };
 
 
     const layoutIII = {
         font: {family: "'STIX Two Text', serif",
             size: 14},
-        xaxis: {title: {text: 'Time (fs)', standoff: AXIS_TITLE_STANDOFF_X}},
+        xaxis: {title: {text: 'Time (fs)', standoff: AXIS_TITLE_STANDOFF_X}, range: [t_init, t_final]},
         yaxis: {title: {text: 'Probability', standoff: AXIS_TITLE_STANDOFF_Y}, range: [0, 1.2]},
         showlegend: true,
         legend: LEGEND_TOP,
-        annotations: [
-            {
-                x: 25,         // Set x-axis position to 25fs
-                y: C_0,        // Use the current alpha numerical value
-                text: '<b>Initial</b>', // Greek letter alpha
-                showarrow: false,
-                yshift: 10,    // Shifts the text slightly above the line
-                font: {size: 16, color: 'black'}
-            },
-            {
-                x: 75,         // Set x-axis position to 75fs
-                y: C_F,        // Use the current beta numerical value
-                text: '<b>Final</b>', // Greek letter beta
-                showarrow: false,
-                yshift: 10,    // Shifts the text slightly above the line
-                font: {size: 16, color: 'black'}
-            }
-        ],
         margin: PLOT_MARGIN
     };
     Plotly.react('plotIII', [C1, C3, C1_RWAs, C3_RWAs, C_init, C_final], layoutIII, {responsive: true, displayModeBar: false });
