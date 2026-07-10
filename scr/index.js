@@ -5,7 +5,9 @@ const evperAU = 27.2114079527e0;
 
 
 // Shared spacing so every plot's whitespace around the drawing area matches.
-const PLOT_MARGIN = { t: 40, r: 30, b: 40, l: 50 };
+// Small top margin since the plot name now lives in the card header, not
+// inside the plot itself (matches the convention used in H2Plus_inter).
+const PLOT_MARGIN = { l: 55, r: 15, b: 55, t: 10, pad: 10 };
 
 const defaultValues = {
     C0: 0.25,
@@ -213,9 +215,8 @@ function updatePlots() {
 
 
     const layout = {
-        title: {text: 'Envelope and Pulse Functions'},
         font: { family: "'STIX Two Text', serif",
-            size: 14},  
+            size: 14},
         xaxis: {title: {text: 'Time (fs)'}},
         yaxis: {title: {text: 'Amplitude'}, range: [-2*test.Op,2*test.Op]},
         margin: PLOT_MARGIN
@@ -250,7 +251,6 @@ function updatePlots() {
    
     // NEW: Updated layoutII to include annotations for the Greek letters
     const layoutII = {
-        title: {text: 'Angle'},
         font: { family: "'STIX Two Text', serif",
             size: 14},
         xaxis: {title: {text: 'Time (fs)'}},
@@ -329,7 +329,6 @@ function updatePlots() {
 
 
     const layoutIII = {
-        title: {text: 'Populations'},
         font: {family: "'STIX Two Text', serif",
             size: 14},
         xaxis: {title: {text: 'Time (fs)'}},
