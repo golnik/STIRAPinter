@@ -256,11 +256,10 @@ function updatePlots() {
             size: 14},
         xaxis: {title: {text: 'Time (fs)', standoff: AXIS_TITLE_STANDOFF_X}},
         yaxis: {title: {text: 'Angle (rad)', standoff: AXIS_TITLE_STANDOFF_Y}, range: [0.0, 0.55]},
-        showlegend: true,
-        legend: LEGEND_TOP,
+        showlegend: false,
         annotations: [
             {
-                x: 25,         // Set x-axis position to 25fs
+                x: time0 + (timef - time0) * 0.05,         // Near the initial time
                 y: Math.acos(Math.sqrt(C_0))/Math.PI,        // Use the current alpha numerical value
                 text: '<b>α</b>', // Greek letter alpha
                 showarrow: false,
@@ -268,7 +267,7 @@ function updatePlots() {
                 font: {size: 16, color: 'black'}
             },
             {
-                x: 75,         // Set x-axis position to 75fs
+                x: timef - (timef - time0) * 0.05,         // Near the final time
                 y: Math.acos(Math.sqrt(C_F))/Math.PI,        // Use the current beta numerical value
                 text: '<b>β</b>', // Greek letter beta
                 showarrow: false,
@@ -276,7 +275,7 @@ function updatePlots() {
                 font: {size: 16, color: 'black'}
             }
         ],
-        margin: PLOT_MARGIN
+        margin: { ...PLOT_MARGIN, t: 15 }
     };
 
 
