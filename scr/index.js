@@ -520,45 +520,84 @@ function updatePlots() {
                 fillcolor: STOKES_COLOR,
                 opacity: 0.2,
                 line: { width: 0 }
+            },
+            // Pump Arrow connecting line (the arrowheads are drawn as
+            // annotations below - Plotly only guarantees the x/y end of an
+            // annotation arrow lands exactly on target, not the ax/ay end,
+            // so a single double-headed annotation can't be exact at both
+            // ends. Drawing the line as a shape plus two head-only
+            // annotations keeps both tips exact.)
+            {
+                type: 'line',
+                x0: 2, y0: lowerY1, x1: 4.5, y1: lowerY1+freqp,
+                line: { color: PUMP_COLOR, width: 3 }
+            },
+            // Stokes Arrow connecting line
+            {
+                type: 'line',
+                x0: 8, y0: lowerY2, x1: 5.5, y1: lowerY2+freqs,
+                line: { color: STOKES_COLOR, width: 3 }
             }
         ],
         annotations: [
-            // Pump Arrow (|1⟩ to |3⟩), double-headed
+            // Pump Arrow head (near |3⟩), exact at the bandwidth box center
             {
-                ax: 2,         // Tail X
-                ay: lowerY1,      // Tail Y (slightly above lower state)
+                ax: 3.25, ay: lowerY1 + freqp/2, // Midpoint - direction reference only
                 axref: 'x',
                 ayref: 'y',
-                x: 4.5,        // Head X
-                y: lowerY1+freqp,       // Head Y (slightly below upper state)
+                x: 4.5,
+                y: lowerY1+freqp,
                 xref: 'x',
                 yref: 'y',
                 showarrow: true,
                 arrowhead: 2,
-                startarrowhead: 2,
                 arrowsize: 1,
-                startarrowsize: 1,
                 arrowwidth: 3,
-                standoff: 3, // Stops the tip at the bottom edge of the |3⟩ bar instead of its center
                 arrowcolor: PUMP_COLOR
             },
-            // Stokes Arrow (|2⟩ to |3⟩), double-headed
+            // Pump Arrow tail (near |1⟩), exact at the bandwidth box center
             {
-                ax: 8,         // Tail X
-                ay: lowerY2,      // Tail Y
+                ax: 3.25, ay: lowerY1 + freqp/2,
                 axref: 'x',
                 ayref: 'y',
-                x: 5.5,        // Head X
-                y: lowerY2+freqs,       // Head Y
+                x: 2,
+                y: lowerY1,
                 xref: 'x',
                 yref: 'y',
                 showarrow: true,
                 arrowhead: 2,
-                startarrowhead: 2,
                 arrowsize: 1,
-                startarrowsize: 1,
                 arrowwidth: 3,
-                standoff: 3, // Stops the tip at the bottom edge of the |3⟩ bar instead of its center
+                arrowcolor: PUMP_COLOR
+            },
+            // Stokes Arrow head (near |3⟩), exact at the bandwidth box center
+            {
+                ax: 6.75, ay: lowerY2 + freqs/2,
+                axref: 'x',
+                ayref: 'y',
+                x: 5.5,
+                y: lowerY2+freqs,
+                xref: 'x',
+                yref: 'y',
+                showarrow: true,
+                arrowhead: 2,
+                arrowsize: 1,
+                arrowwidth: 3,
+                arrowcolor: STOKES_COLOR
+            },
+            // Stokes Arrow tail (near |2⟩), exact at the bandwidth box center
+            {
+                ax: 6.75, ay: lowerY2 + freqs/2,
+                axref: 'x',
+                ayref: 'y',
+                x: 8,
+                y: lowerY2,
+                xref: 'x',
+                yref: 'y',
+                showarrow: true,
+                arrowhead: 2,
+                arrowsize: 1,
+                arrowwidth: 3,
                 arrowcolor: STOKES_COLOR
             },
             // Pump transition energy label
