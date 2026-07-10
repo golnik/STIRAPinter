@@ -628,15 +628,6 @@ function hide_info(info) {
 
 
 function toggleHelp(){
-    var message =
-   'Welcome to the Stimulated Raman Adiabatic Passage(STIRAP) learning tool!\n\n\
-    Developers: Brayton Bosuku, Miguel Alarcon, Nikoley Golubev\
-    \
-    \
-    This tool demonstrates how STIRAP, which is a way to transfer a population of electrons from one level to the next, \
-    interacts with certain parameters, as well as how changes to these items affect the graph as a whole.  \n\n\
-    Visit https://ngolubev.com/ to see more interactive tools and information related to Quantum Physics!';
-
-
-    alert(message);
+    const overlay = document.getElementById('about-modal-overlay');
+    overlay.style.display = overlay.style.display === 'flex' ? 'none' : 'flex';
 }

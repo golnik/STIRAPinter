@@ -6,9 +6,10 @@
     <title>STIRAP Interactive Project</title>
    
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
    
-    <link rel="stylesheet" href="scr/styles.css">
+    <link rel="stylesheet" href="scr/new_styles.css">
     <script src="https://cdn.plot.ly/plotly-3.6.0.min.js" charset="utf-8"></script>
     <script src="https://cdn.plot.ly/plotly-3.3.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js"></script>
@@ -20,8 +21,18 @@
 <!-- Creates the Parameters that the user may input -->
 <body>
 
+    <button class="aboutButton" onclick="toggleHelp()">About</button>
 
-    <button class="button" onclick="toggleHelp()">Help</button>
+    <div class="about-modal-overlay" id="about-modal-overlay" onclick="if (event.target === this) toggleHelp();">
+        <div class="about-modal-content">
+            <button class="about-modal-close" onclick="toggleHelp()">&times;</button>
+            <p><b>Welcome to the Stimulated Raman Adiabatic Passage (STIRAP) Learning Tool!</b></p>
+            <p><b>Developers: Brayton Bosuku, Miguel Alarcon, Nikolay Golubev</b></p>
+            <p>This tool demonstrates how STIRAP, which is a way to transfer a population of electrons from one level to the next, interacts with certain parameters, as well as how changes to these items affect the graph as a whole.</p>
+            <p>Visit https://ngolubev.com/ to see more interactive tools and information related to Quantum Physics!'</p>
+        </div>
+    </div>
+
     <div class="box">
         <div class="parameters">
             <h2>Control Panel</h2>
@@ -72,7 +83,7 @@
                 <label for="toggle_curves" style="cursor: pointer; font-weight: bold;">Show Frequency Pulse & RWA Curves</label>
             </div>
 
-            <button id="default"> Default Values </button>
+            <button id="default" class="panel-action-button"> Default Values </button>
         </div>
 
 
