@@ -4,6 +4,9 @@ const auI = 3.50944e16;
 const evperAU = 27.2114079527e0;
 
 
+// Shared spacing so every plot's whitespace around the drawing area matches.
+const PLOT_MARGIN = { t: 40, r: 30, b: 40, l: 50 };
+
 const defaultValues = {
     C0: 0.25,
     CF: 0,
@@ -215,8 +218,8 @@ function updatePlots() {
             size: 14},  
         xaxis: {title: {text: 'Time (fs)'}},
         yaxis: {title: {text: 'Amplitude'}, range: [-2*test.Op,2*test.Op]},
-        margin: { t: 40, l: 50, r: 20, b: 40 }
-    };  
+        margin: PLOT_MARGIN
+    };
     Plotly.react('plot', [Gau_p, Gau_s, Gau_P_Stagnent, Gau_S_Stagnent], layout, {responsive: true, displayModeBar: false});
 
 
@@ -270,7 +273,8 @@ function updatePlots() {
                 yshift: 10,    // Shifts the text slightly above the line
                 font: {size: 16, color: 'black'}
             }
-        ]
+        ],
+        margin: PLOT_MARGIN
     };
 
 
@@ -348,9 +352,9 @@ function updatePlots() {
                 font: {size: 16, color: 'black'}
             }
         ],
-        margin: { t: 40, l: 50, r: 20, b: 40 }
-    };  
-    Plotly.react('plotIII', [C1, C3, C1_RWAs, C3_RWAs,C_init,C_final], layoutIII, {responsive: true, displayModeBar: false });    
+        margin: PLOT_MARGIN
+    };
+    Plotly.react('plotIII', [C1, C3, C1_RWAs, C3_RWAs,C_init,C_final], layoutIII, {responsive: true, displayModeBar: false });
     
     //Plot IIII Configurations
     const upperY = test.E2 * evperAU;
@@ -407,8 +411,7 @@ function updatePlots() {
 
     // 2. Define the Layout (Arrows and removing axes)
     const layoutIV = {
-        // Remove margins to maximize the drawing space
-        margin: { t: 10, b: 10, l: 10, r: 10 },
+        margin: PLOT_MARGIN,
         xaxis: {
             visible: false, // Hide the X axis entirely
             range: [0, 10]  // Set a fixed internal coordinate system
@@ -495,7 +498,7 @@ function updatePlots() {
 
 
     // 3. Render the Plot
-    Plotly.newPlot('energyPlot', [trace1, trace2, trace3], layoutIV, {staticPlot: true});
+    Plotly.newPlot('energyPlot', [trace1, trace2, trace3], layoutIV, {staticPlot: true, responsive: true});
 }
 
 
@@ -630,4 +633,21 @@ function hide_info(info) {
 function toggleHelp(){
     const overlay = document.getElementById('about-modal-overlay');
     overlay.style.display = overlay.style.display === 'flex' ? 'none' : 'flex';
+}
+
+// Keeps every plot's pixel size in sync with its (flexbox-driven) card height,
+// so charts resize to fit rather than getting clipped by the card.
+const plotIds = ['plot', 'plotII', 'plotIII', 'energyPlot'];
+function resizeAllPlots() {
+    plotIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) Plotly.Plots.resize(el);
+    });
+}
+window.addEventListener('resize', debounce(resizeAllPlots, 150));
+
+// Web fonts finish loading after onload and can shift card heights slightly;
+// resize once more when that settles so plots aren't left mis-sized.
+if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(resizeAllPlots);
 }

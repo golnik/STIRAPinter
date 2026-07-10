@@ -353,6 +353,7 @@ body {
     border-radius: var(--radius);
     padding: 10px;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 
