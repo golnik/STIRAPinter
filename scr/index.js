@@ -23,7 +23,7 @@ const AXIS_TITLE_STANDOFF_Y = 30;
 const defaultValues = {
     C0: 0.25,
     CF: 0,
-    t_s: 62,    
+    t_s: 12,
     total_time: 100,
     detuning0: 0,
     duration: 12,
@@ -38,17 +38,17 @@ const defaultValues = {
 
 function syncPositionSlider(durationValue) {
     const durationVal = parseFloat(durationValue);
-    const min = 50.0 - 2 * durationVal;
-    const max = 50.0 + 2 * durationVal;
+    const min = -2 * durationVal;
+    const max = 2 * durationVal;
 
 
     positionSlider.min = min;
     positionSlider.max = max;
 
 
-    const newPosition = 50.0 + durationVal;
-    positionSlider.value = newPosition;
-    positionOutput.textContent = newPosition;
+    const newDelay = durationVal;
+    positionSlider.value = newDelay;
+    positionOutput.textContent = newDelay.toFixed(1);
 }
 
 
@@ -70,11 +70,11 @@ document.getElementById("default").onclick = function resetToDefaults() {
     document.getElementById("time0").value = defaultValues.time0;
     document.getElementById("timef").value = defaultValues.timef;
     document.getElementById("total_time_Value").textContent = defaultValues.total_time;
-    document.getElementById("detuning0_Value").textContent = defaultValues.detuning0;
-    document.getElementById("duration_Value").textContent = defaultValues.duration;
+    document.getElementById("detuning0_Value").textContent = defaultValues.detuning0.toFixed(1);
+    document.getElementById("duration_Value").textContent = defaultValues.duration.toFixed(1);
     document.getElementById("C0_Value").textContent = defaultValues.C0.toFixed(2);
     document.getElementById("CF_Value").textContent = defaultValues.CF.toFixed(2);
-    document.getElementById("t_s_Value").textContent = defaultValues.t_s;
+    document.getElementById("t_s_Value").textContent = defaultValues.t_s.toFixed(1);
 
 
     syncPositionSlider(defaultValues.duration);
@@ -103,12 +103,19 @@ const outputs = {
 };
 
 
+const TWO_DECIMAL_KEYS = new Set(["C0", "CF"]);
+const ONE_DECIMAL_KEYS = new Set(["detuning0", "duration", "t_s"]);
+
 // Update displayed values dynamically
 Object.keys(sliders).forEach(key => {
     sliders[key].addEventListener("input", function() {
-        outputs[key].textContent = (key === "C0" || key === "CF")
-            ? parseFloat(this.value).toFixed(2)
-            : this.value;
+        if (TWO_DECIMAL_KEYS.has(key)) {
+            outputs[key].textContent = parseFloat(this.value).toFixed(2);
+        } else if (ONE_DECIMAL_KEYS.has(key)) {
+            outputs[key].textContent = parseFloat(this.value).toFixed(1);
+        } else {
+            outputs[key].textContent = this.value;
+        }
     });
 });
 
@@ -139,7 +146,7 @@ function updatePlots() {
     const gboth = parseFloat(document.getElementById('duration').value);
    
     const tp_inp = 50.0;
-    const ts_inp = parseFloat(document.getElementById("t_s").value);
+    const ts_inp = tp_inp + parseFloat(document.getElementById("t_s").value);
     const C_0 = parseFloat(document.getElementById("C0").value);
     const C_F = parseFloat(document.getElementById("CF").value);
     const showCurves = document.getElementById("toggle_curves").checked;
@@ -151,8 +158,8 @@ function updatePlots() {
     let Delta = delta_creation(test.E1, test.E2, test.E3, test.wp, test.ws);
 
 
-    sliders.t_s.min = 50.0 - 2 * test.gp * fsperau;
-    sliders.t_s.max = 50.0 + 2 * test.gp * fsperau;
+    sliders.t_s.min = -2 * test.gp * fsperau;
+    sliders.t_s.max = 2 * test.gp * fsperau;
     test.delta = Delta;
 
 

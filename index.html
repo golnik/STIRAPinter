@@ -97,15 +97,15 @@
                     <h3>Laser Parameters</h3>
                     <i class="fas fa-info-circle" onmouseenter="show_info('info_box_laser')" onmouseleave="hide_info('info_box_laser')"></i>
                     <div class="info_box" id="info_box_laser" style="display: none;">
-                        <p> Detuning shifts both laser frequencies away from resonance by the same amount. Pulse Duration sets how long each Gaussian laser pulse lasts. Position sets the time separation between the Pump and Stokes pulses, following the counter-intuitive pulse ordering used in STIRAP. </p>
+                        <p>Detuning controls the frequency offset of the driving fields from the corresponding transitions, allowing exploration of the effect of non-resonant excitation. Pulse Duration determines the temporal width of the Gaussian control pulses and therefore the timescale over which the interaction occurs. Pump-Stokes Delay controls the timing of the Stokes pulse relative to the Pump pulse, which determines their temporal overlap and the sequence of interactions used to drive the STIRAP process.</p>
                     </div>
                 </div>
-                <label>Detuning (eV): <span id="detuning0_Value">0</span></label>
+                <label>Detuning (eV): <span id="detuning0_Value">0.0</span></label>
                 <input type="range" id="detuning0" step="0.1" min="-0.5" max="0.5" value="0">
-                <label> Pulse Duration (fs): <span id='duration_Value'>12</span></label>
+                <label> Pulse Duration (fs): <span id='duration_Value'>12.0</span></label>
                 <input type="range" id="duration" step="0.1" min="10" max="20" value="12">
-                <label>Position (ts): <span id="t_s_Value">62</span></label>
-                <input type="range" id="t_s" step="0.1" min="0" max="100" value="62">
+                <label>Pump-Stokes Delay (fs): <span id="t_s_Value">12.0</span></label>
+                <input type="range" id="t_s" step="0.1" min="-24" max="24" value="12">
             </div>
 
 
