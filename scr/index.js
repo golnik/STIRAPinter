@@ -206,21 +206,21 @@ function updatePlots() {
 
     // Plot I Configurations
     const Gau_p = {
-        x: t_values, y: stagent_p, name: 'Pump Frequency Pulse',
+        x: t_values, y: stagent_p, name: '$\\Omega_P(t)\\cos(\\omega_P t)$',
         mode: 'lines', line: {color: 'blue', width: 1.5},
         visible: showCurves
     };
     const Gau_s = {
-        x: t_values, y: stagent_s, name: 'Stokes Frequency Pulse',
+        x: t_values, y: stagent_s, name: '$\\Omega_S(t)\\cos(\\omega_S t)$',
         mode: 'lines', line: {color: 'red', width: 1.5},
         visible: showCurves
     };
     const Gau_P_Stagnent = {
-        x: t_values, y: no_frequency_p, name: 'Pump Stagnent Pulse',
+        x: t_values, y: no_frequency_p, name: '$\\Omega_P(t)$',
         mode: 'lines', line: {color: 'blue', width: 2.5}
     };
     const Gau_S_Stagnent = {
-        x: t_values, y: no_frequency_s, name: 'Stokes Stagnent Pulse',
+        x: t_values, y: no_frequency_s, name: '$\\Omega_S(t)$',
         mode: 'lines', line: {color: 'red', width: 2.5}
     };
 
@@ -241,7 +241,7 @@ function updatePlots() {
     const angles = {
         x: t_values,
         y: angle_va,
-        name: 'Angle',
+        name: '$\\theta(t)$',
         mode: 'lines',
         line: {color: 'green', width: 1.5}
     }
@@ -250,14 +250,14 @@ function updatePlots() {
     const Beta_Line = {
         x: t_values,
         y: beta_va,
-        name: 'Beta',
+        name: '$\\beta$',
         mode: 'lines',
         line: {color: 'grey', width: 1.5, dash: 'dot'}
     }
     const Alpha_Line = {
         x: t_values,
         y: alpha_va,
-        name: 'Alpha',
+        name: '$\\alpha$',
         mode: 'lines',
         line: {color: 'grey', width: 1.5, dash: 'dot'}
     }
@@ -315,29 +315,29 @@ function updatePlots() {
     }
 
        const C1 = {
-        x: tt, y: c1, name: 'C1',
+        x: tt, y: c1, name: '$|C_1(t)|^2$',
         mode: 'lines', line: {color: 'blue', width: 2}
     };
     const C3 = {
-        x: tt, y: c3, name: 'C3',
+        x: tt, y: c3, name: '$|C_3(t)|^2$',
         mode: 'lines', line: {color: 'red', width: 2}
     };
     const C1_RWAs = {
-        x: tt_RWA, y: c1_RWA, name: 'C1 (RWA)',
+        x: tt_RWA, y: c1_RWA, name: '$|C_1(t)|^2$ (RWA)',
         mode: 'lines', line: {color: 'orange', width: 2, dash: 'dot'},
         visible: showCurves
     };
     const C3_RWAs = {
-        x: tt_RWA, y: c3_RWA, name: 'C3 (RWA)',
+        x: tt_RWA, y: c3_RWA, name: '$|C_3(t)|^2$ (RWA)',
         mode: 'lines', line: {color: 'purple', width: 2, dash: 'dot'},
         visible: showCurves
     };
     const C_init = {
-        x: t_fq, y: init_pop, name: 'C_1 initial',
+        x: t_fq, y: init_pop, name: '$C_0$',
         mode:'lines', line:{color: 'black', width: 2, dash: 'dashed'}
     };
     const C_final = {
-        x: t_lq, y: final_pop, name: 'C_1 final',
+        x: t_lq, y: final_pop, name: '$C_F$',
         mode:'lines', line:{color: 'black', width:2, dash:'dashed'}
     };
 
