@@ -567,9 +567,9 @@ button:active {
 .graph-title {
     margin: 0;
     font-family: var(--font-sans);
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: 0.2px;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.2px;
     color: var(--color-ink);
     text-align: center;
 }
