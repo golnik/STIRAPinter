@@ -78,6 +78,22 @@
 
             <div class="param-group">
                 <div class="param-group-header">
+                    <h3>Population Controls</h3>
+                    <i class="fas fa-info-circle" onmouseenter="show_info('info_box_population')" onmouseleave="hide_info('info_box_population')"></i>
+                    <div class="info_box" id="info_box_population" style="display: none;">
+                        <p> Sets the initial and final population fractions, which define the mixing angles $\alpha$ and $\beta$ used to prepare the system. </p>
+                    </div>
+                </div>
+                <label>C Initial: <span id="C0_Value">0.25</span></label>
+                <input type="range" id="C0" step="0.01" min="0" max="1" value="0.25" class="slider">
+
+                <label>C Final: <span id="CF_Value">0</span></label>
+                <input type="range" id="CF" step="0.01" min="0" max="1" value="0" class="slider">
+            </div>
+
+
+            <div class="param-group">
+                <div class="param-group-header">
                     <h3>Laser Parameters</h3>
                     <i class="fas fa-info-circle" onmouseenter="show_info('info_box_laser')" onmouseleave="hide_info('info_box_laser')"></i>
                     <div class="info_box" id="info_box_laser" style="display: none;">
@@ -109,22 +125,6 @@
 
                 <label>Total Time: <span id="total_time_Value">100</span></label>
                 <input type="range" id="total_time" step="1" min="0" max="100" value="100">
-            </div>
-
-
-            <div class="param-group">
-                <div class="param-group-header">
-                    <h3>Population Controls</h3>
-                    <i class="fas fa-info-circle" onmouseenter="show_info('info_box_population')" onmouseleave="hide_info('info_box_population')"></i>
-                    <div class="info_box" id="info_box_population" style="display: none;">
-                        <p> Sets the initial and final population fractions, which define the mixing angles $\alpha$ and $\beta$ used to prepare the system. </p>
-                    </div>
-                </div>
-                <label>C Initial: <span id="C0_Value">0.25</span></label>
-                <input type="range" id="C0" step="0.01" min="0" max="1" value="0.25" class="slider">
-               
-                <label>C Final: <span id="CF_Value">0</span></label>
-                <input type="range" id="CF" step="0.01" min="0" max="1" value="0" class="slider">
             </div>
 
 
