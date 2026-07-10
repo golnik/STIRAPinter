@@ -5,9 +5,12 @@ const evperAU = 27.2114079527e0;
 
 
 // Shared spacing so every plot's whitespace around the drawing area matches.
-// Small top margin since the plot name now lives in the card header, not
-// inside the plot itself (matches the convention used in H2Plus_inter).
-const PLOT_MARGIN = { l: 55, r: 15, b: 55, t: 10, pad: 10 };
+// Top margin leaves room for the horizontal legend row above the traces.
+const PLOT_MARGIN = { l: 55, r: 15, b: 55, t: 45, pad: 10 };
+
+// Draws the legend as a horizontal row above the plotting area, in its
+// reserved top margin, instead of overlapping the data.
+const LEGEND_TOP = { orientation: 'h', x: 0.5, xanchor: 'center', y: 1, yanchor: 'bottom' };
 
 const defaultValues = {
     C0: 0.25,
@@ -219,6 +222,8 @@ function updatePlots() {
             size: 14},
         xaxis: {title: {text: 'Time (fs)'}},
         yaxis: {title: {text: 'Amplitude'}, range: [-2*test.Op,2*test.Op]},
+        showlegend: true,
+        legend: LEGEND_TOP,
         margin: PLOT_MARGIN
     };
     Plotly.react('plot', [Gau_p, Gau_s, Gau_P_Stagnent, Gau_S_Stagnent], layout, {responsive: true, displayModeBar: false});
@@ -256,6 +261,7 @@ function updatePlots() {
         xaxis: {title: {text: 'Time (fs)'}},
         yaxis: {title: {text: 'Angle (rad)'}, range: [0.0, 0.55]},
         showlegend: true,
+        legend: LEGEND_TOP,
         annotations: [
             {
                 x: 25,         // Set x-axis position to 25fs
@@ -333,6 +339,8 @@ function updatePlots() {
             size: 14},
         xaxis: {title: {text: 'Time (fs)'}},
         yaxis: {title: {text: 'Probability'}, range: [0, 1.2]},
+        showlegend: true,
+        legend: LEGEND_TOP,
         annotations: [
             {
                 x: 25,         // Set x-axis position to 25fs
