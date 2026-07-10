@@ -436,7 +436,7 @@ function updatePlots() {
     // Bounds for the arrow-style energy axis drawn to the left of the diagram.
     // axisX matches the xaxis range's left edge, where Plotly's side:'left'
     // ticks are anchored, so the custom arrow lines up with them.
-    const axisX = -2;
+    const axisX = -0.5;
     const axisYMin = lowerY1 - 2*bwp;
     const axisYMax = upperY + 3.5*bwp;
 
@@ -446,7 +446,7 @@ function updatePlots() {
         // This diagram has no legend row and no visible x-axis, so it doesn't need
         // PLOT_MARGIN's t/b space reserved for those - shrinking them lets the
         // diagram fill the card down to the bottom instead of leaving a gap.
-        margin: { ...PLOT_MARGIN, l: 60, pad: 0, t: 30, b: 10 },
+        margin: { ...PLOT_MARGIN, l: 60, pad: 0, t: 36, b: 10 },
         xaxis: {
             visible: false, // Hide the X axis entirely - it's just layout spacing, not physical
             range: [axisX, 10]  // Set a fixed internal coordinate system, with room for the energy axis
