@@ -384,14 +384,18 @@ function updatePlots() {
     const bws = 4*Math.sqrt(2*Math.log(2.0))/test.gs * evperAU;
 
 
+    const LEVEL_COLOR = '#4a1420'; // Dark maroon energy-level bars
+    const PUMP_COLOR = '#2255dd';  // Blue: |1⟩ -> |3⟩ (matches Pump color elsewhere)
+    const STOKES_COLOR = '#e74c3c'; // Red: |2⟩ -> |3⟩ (matches Stokes color elsewhere)
+
     const trace1 = {
         x: [1, 3],
         y: [lowerY1, lowerY1],
         mode: 'lines+text',
         text: ['', '|1⟩'], // Label on the right side
         textposition: 'middle right',
-        textfont: { size: 18 },
-        line: { color: '#34495e', width: 4 },
+        textfont: { size: 22 },
+        line: { color: LEVEL_COLOR, width: 5 },
         hoverinfo: 'none',
         showlegend: false
     };
@@ -403,8 +407,8 @@ function updatePlots() {
         mode: 'lines+text',
         text: ['', '|2⟩'],
         textposition: 'middle right',
-        textfont: { size: 18 },
-        line: { color: '#34495e', width: 4 },
+        textfont: { size: 22 },
+        line: { color: LEVEL_COLOR, width: 5 },
         hoverinfo: 'none',
         showlegend: false
     };
@@ -416,31 +420,68 @@ function updatePlots() {
         mode: 'lines+text',
         text: ['', '|3⟩'],
         textposition: 'middle right',
-        textfont: { size: 18 },
-        line: { color: '#34495e', width: 4 },
+        textfont: { size: 22 },
+        line: { color: LEVEL_COLOR, width: 5 },
         hoverinfo: 'none',
         showlegend: false
     };
 
 
+    // Bounds for the arrow-style energy axis drawn to the left of the diagram.
+    // axisX matches the xaxis range's left edge, where Plotly's side:'left'
+    // ticks are anchored, so the custom arrow lines up with them.
+    const axisX = -2;
+    const axisYMin = lowerY1 - 2*bwp;
+    const axisYMax = upperY + 3.5*bwp;
+
     // 2. Define the Layout (Arrows and removing axes)
     const layoutIV = {
-        margin: PLOT_MARGIN,
+        font: { family: "'STIX Two Text', serif", size: 14 },
+        margin: { ...PLOT_MARGIN, l: 60, pad: 0 }, // Extra left margin fits the tick labels; no pad so ticks touch the arrow line
         xaxis: {
-            visible: false, // Hide the X axis entirely
-            range: [0, 10]  // Set a fixed internal coordinate system
+            visible: false, // Hide the X axis entirely - it's just layout spacing, not physical
+            range: [axisX, 10]  // Set a fixed internal coordinate system, with room for the energy axis
         },
         yaxis: {
-            visible: false, // Hide the Y axis entirely
-            range: [lowerY1-2*bwp, upperY+3*bwp] // Padding above and below the states
+            visible: true,
+            side: 'left',
+            showline: false, // The arrow annotation below draws the axis line instead
+            zeroline: false,
+            showgrid: false, // Default gridlines span the full plot; using custom rule lines below instead
+            ticks: 'outside',
+            tickwidth: 3,
+            tickcolor: 'black',
+            ticklen: 8,
+            tickfont: { size: 16 },
+            tickvals: [0, lowerY2, upperY], // Exact energies, so ticks line up with the level bars
+            tickformat: '.2f', // Display with 2 digits after the decimal point
+            range: [axisYMin, axisYMax]
         },
         shapes: [
+            // Rule line from the axis to where the |1⟩ level bar starts
+            {
+                type: 'line',
+                x0: axisX, x1: 1, y0: lowerY1, y1: lowerY1,
+                line: { color: '#999999', width: 1, dash: 'dot' }
+            },
+            // Rule line from the axis to where the |3⟩ level bar starts
+            {
+                type: 'line',
+                x0: axisX, x1: 4, y0: upperY, y1: upperY,
+                line: { color: '#999999', width: 1, dash: 'dot' }
+            },
+            // Rule line from the axis to where the |2⟩ level bar starts
+            {
+                type: 'line',
+                x0: axisX, x1: 7, y0: lowerY2, y1: lowerY2,
+                line: { color: '#999999', width: 1, dash: 'dot' }
+            },
             // Pump Laser Bandwidth - Tail (State 1)
             {
                 type: 'rect',
                 x0: 1.5, x1: 2.5,      // Centers the box around the tail at X=2
                 y0: lowerY1-bwp/2, y1: lowerY1+bwp/2,   // The "height" or bandwidth thickness
-                fillcolor: '#e74c3c',
+                fillcolor: PUMP_COLOR,
                 opacity: 0.2,          // Makes it lightly shaded
                 line: { width: 0 }     // Removes the hard border
             },
@@ -449,7 +490,7 @@ function updatePlots() {
                 type: 'rect',
                 x0: 4.1, x1: 4.9,      // Centers around the head at X=4.5
                 y0: lowerY1+freqp-bwp/2, y1: lowerY1+freqp+bwp/2,
-                fillcolor: '#e74c3c',
+                fillcolor: PUMP_COLOR,
                 opacity: 0.2,
                 line: { width: 0 }
             },
@@ -458,7 +499,7 @@ function updatePlots() {
                 type: 'rect',
                 x0: 7.5, x1: 8.5,      // Centers around the tail at X=8
                 y0: lowerY2-bwp/2, y1: lowerY2+bwp/2,
-                fillcolor: '#3498db',
+                fillcolor: STOKES_COLOR,
                 opacity: 0.2,
                 line: { width: 0 }
             },
@@ -467,13 +508,13 @@ function updatePlots() {
                 type: 'rect',
                 x0: 5.1, x1: 5.9,      // Centers around the head at X=5.5
                 y0: lowerY2+freqs-bwp/2, y1: lowerY2+freqs+bwp/2,
-                fillcolor: '#3498db',
+                fillcolor: STOKES_COLOR,
                 opacity: 0.2,
                 line: { width: 0 }
             }
         ],
         annotations: [
-            // Pump Arrow (|1⟩ to |3⟩)
+            // Pump Arrow (|1⟩ to |3⟩), double-headed
             {
                 ax: 2,         // Tail X
                 ay: lowerY1,      // Tail Y (slightly above lower state)
@@ -485,11 +526,13 @@ function updatePlots() {
                 yref: 'y',
                 showarrow: true,
                 arrowhead: 2,
+                startarrowhead: 2,
                 arrowsize: 1.5,
-                arrowwidth: 2,
-                arrowcolor: '#e74c3c' // Red
+                startarrowsize: 1.5,
+                arrowwidth: 3,
+                arrowcolor: PUMP_COLOR
             },
-            // Stokes Arrow (|2⟩ to |3⟩)
+            // Stokes Arrow (|2⟩ to |3⟩), double-headed
             {
                 ax: 8,         // Tail X
                 ay: lowerY2,      // Tail Y
@@ -501,9 +544,52 @@ function updatePlots() {
                 yref: 'y',
                 showarrow: true,
                 arrowhead: 2,
+                startarrowhead: 2,
                 arrowsize: 1.5,
-                arrowwidth: 2,
-                arrowcolor: '#3498db' // Blue
+                startarrowsize: 1.5,
+                arrowwidth: 3,
+                arrowcolor: STOKES_COLOR
+            },
+            // Pump transition energy label
+            {
+                x: 3.25, y: lowerY1 + freqp/2,
+                xref: 'x', yref: 'y',
+                text: freqp.toFixed(2) + ' eV',
+                showarrow: false,
+                xshift: -40,
+                font: { size: 16, color: PUMP_COLOR }
+            },
+            // Stokes transition energy label
+            {
+                x: 6.75, y: lowerY2 + freqs/2,
+                xref: 'x', yref: 'y',
+                text: freqs.toFixed(2) + ' eV',
+                showarrow: false,
+                xshift: 40,
+                font: { size: 16, color: STOKES_COLOR }
+            },
+            // Arrow-style energy axis: vertical line with an arrowhead at the top
+            {
+                ax: axisX, ay: axisYMin,
+                axref: 'x', ayref: 'y',
+                x: axisX, y: axisYMax,
+                xref: 'x', yref: 'y',
+                showarrow: true,
+                arrowhead: 2,
+                arrowsize: 1.2,
+                arrowwidth: 3,
+                arrowcolor: 'black'
+            },
+            // Axis label centered above the arrow tip
+            {
+                x: axisX, y: axisYMax,
+                xref: 'x', yref: 'y',
+                text: 'E [eV]',
+                showarrow: false,
+                xanchor: 'center',
+                yanchor: 'bottom',
+                yshift: 8,
+                font: { size: 20, color: 'black' }
             }
         ],
         plot_bgcolor: 'rgba(0,0,0,0)', // Transparent background
