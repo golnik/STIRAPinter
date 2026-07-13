@@ -30,8 +30,8 @@ const defaultValues = {
     timef: 100,
     toggle_curves: true,
     E1: 0,
-    E2: 5.266919,
-    E3: 1.306423
+    E2: 1.0,
+    E3: 0.6
 };
 
 
