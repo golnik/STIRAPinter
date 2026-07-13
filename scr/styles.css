@@ -200,7 +200,7 @@ body {
     top: calc(100% + 6px);
     right: 0;
     width: min(220px, 20vw);
-    max-width: 220px;
+    max-width: 420px;
     background-color: rgb(223, 182, 223);
     border: 1px solid black;
     border-radius: 5px;

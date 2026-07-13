@@ -575,7 +575,7 @@ button:active {
     top: calc(100% + 6px);
     right: 0;
     width: min(260px, 24vw);
-    max-width: 260px;
+    max-width: 460px;
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
     border-left: 3px solid var(--color-primary);
