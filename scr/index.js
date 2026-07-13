@@ -445,8 +445,8 @@ function updatePlots() {
     const levelMin = Math.min(lowerY1, lowerY2, upperY);
     const levelMax = Math.max(lowerY1, lowerY2, upperY);
     const levelSpan = Math.max(levelMax - levelMin, 0.5);
-    const axisYMin = levelMin - 0.3*levelSpan;
-    const axisYMax = levelMax + 0.45*levelSpan;
+    const axisYMin = levelMin - 0.2*levelSpan;
+    const axisYMax = levelMax + 0.2*levelSpan;
 
     // 2. Define the Layout (Arrows and removing axes)
     const layoutIV = {
