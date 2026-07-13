@@ -767,7 +767,10 @@ inputsToWatch.forEach(id => {
 
 
 // Initial Plot Generation on Page Load
-window.onload = updatePlots;
+window.onload = function() {
+    updatePlots();
+    document.getElementById('about-modal-overlay').style.display = 'flex';
+};
 
 // Does the Info Box toggle
 function show_info(info) {
