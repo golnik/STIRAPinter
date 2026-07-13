@@ -616,7 +616,7 @@ button:active {
     justify-content: center;
     gap: 8px;
     position: relative;
-    margin-bottom: 8px;
+    margin-bottom: 2px;
 }
 
 .graph-title {

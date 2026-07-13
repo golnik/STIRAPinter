@@ -7,7 +7,7 @@ const evperAU = 27.2114079527e0;
 // Shared spacing so every plot's whitespace around the drawing area matches.
 // Top margin leaves room for the horizontal legend row above the traces;
 // left margin leaves room for the wider y-axis title gap below.
-const PLOT_MARGIN = { l: 70, r: 15, b: 55, t: 52, pad: 10 };
+const PLOT_MARGIN = { l: 70, r: 15, b: 55, t: 30, pad: 10 };
 
 // Draws the legend as a horizontal row above the plotting area, in its
 // reserved top margin, instead of overlapping the data.
@@ -365,7 +365,7 @@ function updatePlots() {
         font: {family: "'STIX Two Text', serif",
             size: 14},
         xaxis: {title: {text: 'Time (fs)', standoff: AXIS_TITLE_STANDOFF_X}, range: [t_init, t_final]},
-        yaxis: {title: {text: 'Probability', standoff: AXIS_TITLE_STANDOFF_Y}, range: [0, 1.2]},
+        yaxis: {title: {text: 'Population', standoff: AXIS_TITLE_STANDOFF_Y}, range: [0, 1.2]},
         showlegend: true,
         legend: LEGEND_TOP,
         margin: PLOT_MARGIN
