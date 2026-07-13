@@ -575,7 +575,7 @@ button:active {
     top: calc(100% + 6px);
     right: 0;
     width: min(260px, 24vw);
-    max-width: 460px;
+    max-width: 260px;
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
     border-left: 3px solid var(--color-primary);
@@ -677,6 +677,11 @@ button:active {
     .graph-card {
         min-height: 340px;
     }
+
+    .info_box {
+        width: min(340px, 42vw);
+        max-width: 340px;
+    }
 }
 
 @media (max-width: 700px) {
@@ -687,5 +692,10 @@ button:active {
 
     .second_line_graphs .graph-card:first-child {
         max-width: 100%;
+    }
+
+    .info_box {
+        width: min(320px, 85vw);
+        max-width: 85vw;
     }
 }
