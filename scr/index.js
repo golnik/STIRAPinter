@@ -24,6 +24,7 @@ const defaultValues = {
     C0: 0.25,
     CF: 0,
     t_s: 12,
+    stokes_pos: 50,
     detuning0: 0,
     duration: 12,
     time0: 0,
@@ -37,14 +38,6 @@ const defaultValues = {
 
 function syncPositionSlider(durationValue) {
     const durationVal = parseFloat(durationValue);
-    const min = -2 * durationVal;
-    const max = 2 * durationVal;
-
-
-    positionSlider.min = min;
-    positionSlider.max = max;
-
-
     const newDelay = durationVal;
     positionSlider.value = newDelay;
     positionOutput.textContent = newDelay.toFixed(1);
@@ -73,6 +66,7 @@ document.getElementById("default").onclick = function resetToDefaults() {
     document.getElementById("C0_Value").textContent = defaultValues.C0.toFixed(2);
     document.getElementById("CF_Value").textContent = defaultValues.CF.toFixed(2);
     document.getElementById("t_s_Value").textContent = defaultValues.t_s.toFixed(1);
+    document.getElementById("stokes_pos_Value").textContent = defaultValues.stokes_pos.toFixed(1);
 
 
     syncPositionSlider(defaultValues.duration);
@@ -85,6 +79,7 @@ const sliders = {
     C0: document.getElementById("C0"),
     CF: document.getElementById("CF"),
     t_s: document.getElementById("t_s"),
+    stokes_pos: document.getElementById("stokes_pos"),
     detuning0: document.getElementById("detuning0"),
     duration: document.getElementById("duration")
 };
@@ -94,13 +89,14 @@ const outputs = {
     C0: document.getElementById("C0_Value"),
     CF: document.getElementById("CF_Value"),
     t_s: document.getElementById("t_s_Value"),
+    stokes_pos: document.getElementById("stokes_pos_Value"),
     detuning0: document.getElementById("detuning0_Value"),
     duration: document.getElementById("duration_Value")
 };
 
 
 const TWO_DECIMAL_KEYS = new Set(["C0", "CF"]);
-const ONE_DECIMAL_KEYS = new Set(["detuning0", "duration", "t_s"]);
+const ONE_DECIMAL_KEYS = new Set(["detuning0", "duration", "t_s", "stokes_pos"]);
 
 // Update displayed values dynamically
 Object.keys(sliders).forEach(key => {
@@ -161,7 +157,7 @@ function updatePlots() {
     const delta_0 = parseFloat(document.getElementById('detuning0').value);
     const gboth = parseFloat(document.getElementById('duration').value);
    
-    const tp_inp = 50.0;
+    const tp_inp = parseFloat(document.getElementById("stokes_pos").value);
     const ts_inp = tp_inp + parseFloat(document.getElementById("t_s").value);
     const C_0 = parseFloat(document.getElementById("C0").value);
     const C_F = parseFloat(document.getElementById("CF").value);
@@ -174,8 +170,6 @@ function updatePlots() {
     let Delta = delta_creation(test.E1, test.E2, test.E3, test.wp, test.ws);
 
 
-    sliders.t_s.min = -2 * test.gp * fsperau;
-    sliders.t_s.max = 2 * test.gp * fsperau;
     test.delta = Delta;
 
 
@@ -759,7 +753,7 @@ function population_calculations_RWA(test) {
 
 
 // Event Listeners for completely dynamic updating
-const inputsToWatch = ["C0", "CF", "t_s", "detuning0", "duration", "time0", "timef", "toggle_curves", "E1", "E2", "E3"];
+const inputsToWatch = ["C0", "CF", "t_s", "stokes_pos", "detuning0", "duration", "time0", "timef", "toggle_curves", "E1", "E2", "E3"];
 
 
 // Apply a 300ms debounce to prevent the UI from freezing when rapidly sliding
