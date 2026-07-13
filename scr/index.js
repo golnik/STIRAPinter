@@ -24,7 +24,6 @@ const defaultValues = {
     C0: 0.25,
     CF: 0,
     t_s: 12,
-    total_time: 100,
     detuning0: 0,
     duration: 12,
     time0: 0,
@@ -69,7 +68,6 @@ document.getElementById("default").onclick = function resetToDefaults() {
 
     document.getElementById("time0").value = defaultValues.time0;
     document.getElementById("timef").value = defaultValues.timef;
-    document.getElementById("total_time_Value").textContent = defaultValues.total_time;
     document.getElementById("detuning0_Value").textContent = defaultValues.detuning0.toFixed(1);
     document.getElementById("duration_Value").textContent = defaultValues.duration.toFixed(1);
     document.getElementById("C0_Value").textContent = defaultValues.C0.toFixed(2);
@@ -87,7 +85,6 @@ const sliders = {
     C0: document.getElementById("C0"),
     CF: document.getElementById("CF"),
     t_s: document.getElementById("t_s"),
-    total_time: document.getElementById("total_time"),
     detuning0: document.getElementById("detuning0"),
     duration: document.getElementById("duration")
 };
@@ -97,7 +94,6 @@ const outputs = {
     C0: document.getElementById("C0_Value"),
     CF: document.getElementById("CF_Value"),
     t_s: document.getElementById("t_s_Value"),
-    total_time: document.getElementById("total_time_Value"),
     detuning0: document.getElementById("detuning0_Value"),
     duration: document.getElementById("duration_Value")
 };
@@ -763,7 +759,7 @@ function population_calculations_RWA(test) {
 
 
 // Event Listeners for completely dynamic updating
-const inputsToWatch = ["C0", "CF", "t_s", "total_time", "detuning0", "duration", "time0", "timef", "toggle_curves", "E1", "E2", "E3"];
+const inputsToWatch = ["C0", "CF", "t_s", "detuning0", "duration", "time0", "timef", "toggle_curves", "E1", "E2", "E3"];
 
 
 // Apply a 300ms debounce to prevent the UI from freezing when rapidly sliding
