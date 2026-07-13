@@ -62,7 +62,7 @@
                     <h3>Energy Levels</h3>
                     <i class="fas fa-info-circle" onmouseenter="show_info('info_box_energy_levels')" onmouseleave="hide_info('info_box_energy_levels')"></i>
                     <div class="info_box" id="info_box_energy_levels" style="display: none;">
-                        <p> Sets the absolute energies $E_1$, $E_2$, and $E_3$ of levels $|1\rangle$, $|2\rangle$, and $|3\rangle$, respectively.</p>
+                        <p>This panel defines the three-level quantum system used in the STIRAP simulation. The energies of the three quantum levels can be adjusted to explore different level configurations and investigate how the energy spacing influences the interaction with the applied laser fields.</p>
                     </div>
                 </div>
                 <label>E<sub>1</sub> (eV)</label>
@@ -81,7 +81,7 @@
                     <h3>Population Controls</h3>
                     <i class="fas fa-info-circle" onmouseenter="show_info('info_box_population')" onmouseleave="hide_info('info_box_population')"></i>
                     <div class="info_box" id="info_box_population" style="display: none;">
-                        <p> Sets the initial and final population fractions, which define the mixing angles $\alpha$ and $\beta$ used to prepare the system. </p>
+                        <p>This panel specifies the initial and target population distributions between the states $|1\rangle$ and $|3\rangle$. By adjusting these populations, different initial conditions and target states can be prepared, allowing various population transfer pathways and coherent dynamics to be explored.</p>
                     </div>
                 </div>
                 <label>Initial: <span id="C0_Value">0.25</span></label>
@@ -97,7 +97,7 @@
                     <h3>Laser Parameters</h3>
                     <i class="fas fa-info-circle" onmouseenter="show_info('info_box_laser')" onmouseleave="hide_info('info_box_laser')"></i>
                     <div class="info_box" id="info_box_laser" style="display: none;">
-                        <p>Detuning controls the frequency offset of the driving fields from the corresponding transitions, allowing exploration of the effect of non-resonant excitation. Pulse Duration determines the temporal width of the Gaussian control pulses and therefore the timescale over which the interaction occurs. Pump-Stokes Delay controls the timing of the Stokes pulse relative to the Pump pulse, which determines their temporal overlap and the sequence of interactions used to drive the STIRAP process.</p>
+                        <p>This panel controls the properties of the Pump and Stokes laser pulses that drive the population transfer. The available parameters include the pulse detuning, temporal widths, peak times, and relative delay, which determine the interaction between the laser fields and the quantum system. Modifying these parameters allows the conditions required for efficient and robust population transfer to be investigated.</p>
                     </div>
                 </div>
                 <label>Detuning (eV): <span id="detuning0_Value">0.0</span></label>
@@ -113,16 +113,16 @@
 
             <div class="param-group">
                 <div class="param-group-header">
-                    <h3>Time Parameters</h3>
+                    <h3>Integration Parameters</h3>
                     <i class="fas fa-info-circle" onmouseenter="show_info('info_box_time')" onmouseleave="hide_info('info_box_time')"></i>
                     <div class="info_box" id="info_box_time" style="display: none;">
-                        <p> Sets the simulation's time window (t0 to tf) and how much of that window the plots display. </p>
+                        <p>This panel defines the initial and final times over which the time-dependent Schrödinger equation is numerically propagated.</p>
                     </div>
                 </div>
-                <label>Initial Time (t0)</label>
+                <label>Initial Time (fs)</label>
                 <input type="number" id="time0" step="1" min="0" value="0">
 
-                <label>Final Time (tf)</label>
+                <label>Final Time (fs)</label>
                 <input type="number" id="timef" step="1" min="100" max="500" value="100">
             </div>
 
@@ -132,7 +132,7 @@
                 <label for="toggle_curves" style="cursor: pointer; font-weight: bold;">Show Exact Solution</label>
                 <i class="fas fa-info-circle" onmouseenter="show_info('info_box_exact_solution')" onmouseleave="hide_info('info_box_exact_solution')"></i>
                 <div class="info_box" id="info_box_exact_solution" style="display: none;">
-                    <p> Toggles the exact (non-rotating-wave) $|C_1(t)|^2$ and $|C_3(t)|^2$ population curves, along with the oscillating (carrier-frequency) Pump and Stokes fields in the Envelope and Pulse Functions plot. The RWA curves stay visible either way.</p>
+                    <p>This checkbox toggles the display of the exact numerical solution of the time-dependent Schrödinger equation together with the solution obtained using the rotating-wave approximation (RWA). The RWA is the approximation commonly used to derive the STIRAP equations, in which the rapidly oscillating terms of the laser-matter interaction are neglected while the near-resonant terms responsible for the population transfer are retained. Comparing the two solutions makes it possible to assess the validity of the RWA and identify the conditions under which it accurately describes the system dynamics.</p>
                 </div>
             </div>
 
@@ -147,7 +147,7 @@
                         <span class="graph-title">Envelope and Pulse Functions</span>
                         <i class="fas fa-info-circle" onmouseenter="show_info('Laser_Pulse_box')" onmouseleave="hide_info('Laser_Pulse_box')"></i>
                         <div class="info_box" id="Laser_Pulse_box" style="display: none;">
-                            <p> This represents the $\Omega_P$ & $\Omega_S$ laser pulses we used in our simulation in order to transfer a population of electrons within the 3-level system. From level $|1\rangle$ to level $|3\rangle$ without interfering or touching the intermediate state $|2\rangle$.  </p>
+                            <p>This plot displays both the envelopes and the corresponding electric fields of the Pump and Stokes laser pulses as functions of time. The envelopes define the temporal profiles of the pulses, while the oscillating fields represent the electromagnetic waves that drive the transitions between the quantum levels. Together, they illustrate the relative timing, duration, temporal overlap, and oscillatory behavior of the two control fields throughout the STIRAP sequence.</p>
                         </div>
                     </div>
                     <div id="plot" class="graph-container"></div>
@@ -158,7 +158,7 @@
                         <span class="graph-title">Angle</span>
                         <i class="fas fa-info-circle" onmouseenter="show_info('Angle_box')" onmouseleave="hide_info('Angle_box')"></i>
                         <div class="info_box" id="Angle_box" style="display: none;">
-                            <p> This shows the angle of the diffrence between the $\Omega_P$ & $\Omega_S$ laser pulses. </p>
+                            <p>This plot shows the time evolution of the mixing angle, $\theta(t)=\arctan[\Omega_P(t)/\Omega_S(t)]$, which characterizes the relative strengths of the Pump and Stokes couplings. The gradual variation of this angle determines the adiabatic evolution of the quantum system and governs the transfer of population between the initial and target quantum levels while minimizing occupation of the intermediate level.</p>
                         </div>
                     </div>
                     <div id="plotII" class="graph-container"></div>
@@ -170,7 +170,7 @@
                         <span class="graph-title">Energy-Level Diagram</span>
                         <i class="fas fa-info-circle" onmouseenter="show_info('info_box_energy')" onmouseleave="hide_info('info_box_energy')"></i>
                         <div class="info_box" id="info_box_energy" style="display: none;">
-                            <p> This represents the energy-level diagram and the laser couplings used in the STIRAP process. </p>
+                            <p>This panel illustrates the three-level energy structure together with the Pump and Stokes laser couplings. The diagram provides a schematic representation of the optical transitions driven by the two laser fields and shows how the fields couple the quantum levels throughout the STIRAP process.</p>
                         </div>
                     </div>
                     <div id="energyPlot" class="graph-container large-graph"></div>
@@ -180,7 +180,7 @@
                         <span class="graph-title">Populations</span>
                         <i class="fas fa-info-circle" onmouseenter="show_info('info_box_t')" onmouseleave="hide_info('info_box_t')"></i>
                         <div class="info_box" id="info_box_t" style="display: none;">
-                            <p> This represents how the population of level $|1\rangle$ & level $|3\rangle$ changes over time, as well as the probability of the electron being present in that level depending on the time.  </p>
+                            <p>This plot displays the time-dependent populations of the quantum levels during the interaction with the Pump and Stokes pulses. It provides a direct visualization of the population transfer process, showing how the population evolves from the initial state to the target state while the occupation of the intermediate level remains strongly suppressed under adiabatic conditions.</p>
                         </div>
                     </div>
                     <div id="plotIII" class="graph-container large-graph"></div>
