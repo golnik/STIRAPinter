@@ -7,7 +7,7 @@ const evperAU = 27.2114079527e0;
 // Shared spacing so every plot's whitespace around the drawing area matches.
 // Top margin leaves room for the horizontal legend row above the traces;
 // left margin leaves room for the wider y-axis title gap below.
-const PLOT_MARGIN = { l: 70, r: 15, b: 55, t: 52, pad: 10 };
+const PLOT_MARGIN = { l: 70, r: 15, b: 55, t: 30, pad: 10 };
 
 // Draws the legend as a horizontal row above the plotting area, in its
 // reserved top margin, instead of overlapping the data.
@@ -24,28 +24,20 @@ const defaultValues = {
     C0: 0.25,
     CF: 0,
     t_s: 12,
-    total_time: 100,
+    stokes_pos: 50,
     detuning0: 0,
     duration: 12,
     time0: 0,
     timef: 100,
     toggle_curves: true,
     E1: 0,
-    E2: 5.266919,
-    E3: 1.306423
+    E2: 1.0,
+    E3: 0.6
 };
 
 
 function syncPositionSlider(durationValue) {
     const durationVal = parseFloat(durationValue);
-    const min = -2 * durationVal;
-    const max = 2 * durationVal;
-
-
-    positionSlider.min = min;
-    positionSlider.max = max;
-
-
     const newDelay = durationVal;
     positionSlider.value = newDelay;
     positionOutput.textContent = newDelay.toFixed(1);
@@ -69,12 +61,12 @@ document.getElementById("default").onclick = function resetToDefaults() {
 
     document.getElementById("time0").value = defaultValues.time0;
     document.getElementById("timef").value = defaultValues.timef;
-    document.getElementById("total_time_Value").textContent = defaultValues.total_time;
     document.getElementById("detuning0_Value").textContent = defaultValues.detuning0.toFixed(1);
     document.getElementById("duration_Value").textContent = defaultValues.duration.toFixed(1);
     document.getElementById("C0_Value").textContent = defaultValues.C0.toFixed(2);
     document.getElementById("CF_Value").textContent = defaultValues.CF.toFixed(2);
     document.getElementById("t_s_Value").textContent = defaultValues.t_s.toFixed(1);
+    document.getElementById("stokes_pos_Value").textContent = defaultValues.stokes_pos.toFixed(1);
 
 
     syncPositionSlider(defaultValues.duration);
@@ -87,7 +79,7 @@ const sliders = {
     C0: document.getElementById("C0"),
     CF: document.getElementById("CF"),
     t_s: document.getElementById("t_s"),
-    total_time: document.getElementById("total_time"),
+    stokes_pos: document.getElementById("stokes_pos"),
     detuning0: document.getElementById("detuning0"),
     duration: document.getElementById("duration")
 };
@@ -97,14 +89,14 @@ const outputs = {
     C0: document.getElementById("C0_Value"),
     CF: document.getElementById("CF_Value"),
     t_s: document.getElementById("t_s_Value"),
-    total_time: document.getElementById("total_time_Value"),
+    stokes_pos: document.getElementById("stokes_pos_Value"),
     detuning0: document.getElementById("detuning0_Value"),
     duration: document.getElementById("duration_Value")
 };
 
 
 const TWO_DECIMAL_KEYS = new Set(["C0", "CF"]);
-const ONE_DECIMAL_KEYS = new Set(["detuning0", "duration", "t_s"]);
+const ONE_DECIMAL_KEYS = new Set(["detuning0", "duration", "t_s", "stokes_pos"]);
 
 // Update displayed values dynamically
 Object.keys(sliders).forEach(key => {
@@ -136,6 +128,26 @@ durationSlider.addEventListener("input", function() {
 });
 
 
+// Keeps t0 < tf so the ODE integrator (numeric.dopri only steps forward)
+// never gets called with an empty or inverted time window, which otherwise
+// silently collapses every plot to a single degenerate point.
+const time0Input = document.getElementById("time0");
+const timefInput = document.getElementById("timef");
+function syncTimeWindow(changedId) {
+    const t0 = parseFloat(time0Input.value);
+    const tf = parseFloat(timefInput.value);
+    if (!isFinite(t0) || !isFinite(tf) || t0 < tf) return;
+
+    if (changedId === "time0") {
+        timefInput.value = t0 + 1;
+    } else {
+        time0Input.value = Math.max(0, tf - 1);
+    }
+}
+time0Input.addEventListener("input", () => syncTimeWindow("time0"));
+timefInput.addEventListener("input", () => syncTimeWindow("timef"));
+
+
 // Core calculation and plotting function
 function updatePlots() {
 
@@ -145,7 +157,7 @@ function updatePlots() {
     const delta_0 = parseFloat(document.getElementById('detuning0').value);
     const gboth = parseFloat(document.getElementById('duration').value);
    
-    const tp_inp = 50.0;
+    const tp_inp = parseFloat(document.getElementById("stokes_pos").value);
     const ts_inp = tp_inp + parseFloat(document.getElementById("t_s").value);
     const C_0 = parseFloat(document.getElementById("C0").value);
     const C_F = parseFloat(document.getElementById("CF").value);
@@ -158,8 +170,6 @@ function updatePlots() {
     let Delta = delta_creation(test.E1, test.E2, test.E3, test.wp, test.ws);
 
 
-    sliders.t_s.min = -2 * test.gp * fsperau;
-    sliders.t_s.max = 2 * test.gp * fsperau;
     test.delta = Delta;
 
 
@@ -298,13 +308,14 @@ function updatePlots() {
 
 
     const tt = [], c1 = [], c3 = [], tt_RWA = [], c1_RWA = [], c3_RWA = [];
-    let ii = res[0].length;
 
-
-    for(let i = 0; i < ii; i++) {
+    // res (NRW) and resII (RWA) are two independent adaptive-step integrations with different number of steps
+    for (let i = 0; i < res[0].length; i++) {
         tt.push(res[0][i] * fsperau);
         c1.push(res[1][0][i]**2 + res[1][1][i]**2);
         c3.push(res[1][4][i]**2 + res[1][5][i]**2);
+    }
+    for (let i = 0; i < resII[0].length; i++) {
         tt_RWA.push(resII[0][i] * fsperau);
         c1_RWA.push(resII[1][0][i]**2 + resII[1][1][i]**2);
         c3_RWA.push(resII[1][4][i]**2 + resII[1][5][i]**2);
@@ -354,7 +365,7 @@ function updatePlots() {
         font: {family: "'STIX Two Text', serif",
             size: 14},
         xaxis: {title: {text: 'Time (fs)', standoff: AXIS_TITLE_STANDOFF_X}, range: [t_init, t_final]},
-        yaxis: {title: {text: 'Probability', standoff: AXIS_TITLE_STANDOFF_Y}, range: [0, 1.2]},
+        yaxis: {title: {text: 'Population', standoff: AXIS_TITLE_STANDOFF_Y}, range: [0, 1.2]},
         showlegend: true,
         legend: LEGEND_TOP,
         margin: PLOT_MARGIN
@@ -428,8 +439,8 @@ function updatePlots() {
     const levelMin = Math.min(lowerY1, lowerY2, upperY);
     const levelMax = Math.max(lowerY1, lowerY2, upperY);
     const levelSpan = Math.max(levelMax - levelMin, 0.5);
-    const axisYMin = levelMin - 0.3*levelSpan;
-    const axisYMax = levelMax + 0.45*levelSpan;
+    const axisYMin = levelMin - 0.2*levelSpan;
+    const axisYMax = levelMax + 0.2*levelSpan;
 
     // 2. Define the Layout (Arrows and removing axes)
     const layoutIV = {
@@ -708,8 +719,8 @@ function population_calculations_NRW(test) {
         ];
     }
     function f(t, x) {
-        let OmegaS = -(test.Os * test.mu23) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.cos(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.cos(test.beta)) * Math.cos(test.ws * t);
-        let OmegaP = -(test.Op * test.mu12) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.sin(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.sin(test.beta)) * Math.cos(test.wp * t);
+        let OmegaS = -(test.Os * test.mu23) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.cos(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.cos(test.beta)) * Math.cos(test.ws * (t-test.t0));
+        let OmegaP = -(test.Op * test.mu12) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.sin(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.sin(test.beta)) * Math.cos(test.wp * (t-test.t0));
         return F(x, OmegaS, OmegaP);
     }
     let x0 = [Math.cos(test.alpha), 0, 0, 0, Math.sin(test.alpha), 0];
@@ -742,7 +753,7 @@ function population_calculations_RWA(test) {
 
 
 // Event Listeners for completely dynamic updating
-const inputsToWatch = ["C0", "CF", "t_s", "total_time", "detuning0", "duration", "time0", "timef", "toggle_curves", "E1", "E2", "E3"];
+const inputsToWatch = ["C0", "CF", "t_s", "stokes_pos", "detuning0", "duration", "time0", "timef", "toggle_curves", "E1", "E2", "E3"];
 
 
 // Apply a 300ms debounce to prevent the UI from freezing when rapidly sliding
@@ -756,7 +767,10 @@ inputsToWatch.forEach(id => {
 
 
 // Initial Plot Generation on Page Load
-window.onload = updatePlots;
+window.onload = function() {
+    updatePlots();
+    document.getElementById('about-modal-overlay').style.display = 'flex';
+};
 
 // Does the Info Box toggle
 function show_info(info) {

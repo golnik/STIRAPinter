@@ -151,6 +151,10 @@ body {
     font-family: var(--font-sans);
     color: var(--color-ink-soft);
     line-height: 1.65;
+    text-align: justify;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
 }
 
 .about-modal-content p:first-of-type b {
@@ -597,6 +601,10 @@ button:active {
 
 .info_box p {
     margin: 0;
+    text-align: justify;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
 }
 
 
@@ -608,7 +616,7 @@ button:active {
     justify-content: center;
     gap: 8px;
     position: relative;
-    margin-bottom: 8px;
+    margin-bottom: 2px;
 }
 
 .graph-title {
