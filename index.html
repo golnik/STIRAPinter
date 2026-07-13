@@ -85,10 +85,10 @@
                     </div>
                 </div>
                 <label>Initial: <span id="C0_Value">0.25</span></label>
-                <input type="range" id="C0" step="0.01" min="0" max="1" value="0.25" class="slider">
+                <input type="range" id="C0" step="0.01" min="0" max="1" value="0.25">
 
                 <label>Final: <span id="CF_Value">0.00</span></label>
-                <input type="range" id="CF" step="0.01" min="0" max="1" value="0" class="slider">
+                <input type="range" id="CF" step="0.01" min="0" max="1" value="0">
             </div>
 
 
@@ -97,16 +97,16 @@
                     <h3>Laser Parameters</h3>
                     <i class="fas fa-info-circle" onmouseenter="show_info('info_box_laser')" onmouseleave="hide_info('info_box_laser')"></i>
                     <div class="info_box" id="info_box_laser" style="display: none;">
-                        <p>This panel controls the properties of the Pump and Stokes laser pulses that drive the population transfer. The available parameters include the pulse detuning, temporal widths, peak times, and relative delay, which determine the interaction between the laser fields and the quantum system. Modifying these parameters allows the conditions required for efficient and robust population transfer to be investigated.</p>
+                        <p>This panel controls the properties of the Pump and Stokes laser pulses that drive the population transfer. In the implemented scheme, each pulse is constructed as a combination of two time-delayed Gaussian pulses, referred to as the <b>Left</b> and <b>Right</b> Gaussian components, whose relative amplitudes are determined by the selected mixing angles. The available controls allow the detuning of the laser frequencies from resonance to be adjusted, set the duration of the Gaussian components, and specify the temporal positions of the left and right Gaussians, thereby defining the timing, overlap, and overall shape of the control fields.</p>
                     </div>
                 </div>
                 <label>Detuning (eV): <span id="detuning0_Value">0.0</span></label>
                 <input type="range" id="detuning0" step="0.1" min="-0.5" max="0.5" value="0">
-                <label> Pulse Duration (fs): <span id='duration_Value'>12.0</span></label>
+                <label>Pulse Duration (fs): <span id='duration_Value'>12.0</span></label>
                 <input type="range" id="duration" step="0.1" min="10" max="20" value="12">
-                <label>Stokes Pulse Position (fs): <span id="stokes_pos_Value">50.0</span></label>
+                <label>Left Pulse Position (fs): <span id="stokes_pos_Value">50.0</span></label>
                 <input type="range" id="stokes_pos" step="0.1" min="0" max="100" value="50">                
-                <label>Stokes-Pump Delay (fs): <span id="t_s_Value">12.0</span></label>
+                <label>Left-Right Pulse Delay (fs): <span id="t_s_Value">12.0</span></label>
                 <input type="range" id="t_s" step="0.1" min="-20" max="20" value="12">
             </div>
 
