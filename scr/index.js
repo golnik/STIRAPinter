@@ -136,6 +136,26 @@ durationSlider.addEventListener("input", function() {
 });
 
 
+// Keeps t0 < tf so the ODE integrator (numeric.dopri only steps forward)
+// never gets called with an empty or inverted time window, which otherwise
+// silently collapses every plot to a single degenerate point.
+const time0Input = document.getElementById("time0");
+const timefInput = document.getElementById("timef");
+function syncTimeWindow(changedId) {
+    const t0 = parseFloat(time0Input.value);
+    const tf = parseFloat(timefInput.value);
+    if (!isFinite(t0) || !isFinite(tf) || t0 < tf) return;
+
+    if (changedId === "time0") {
+        timefInput.value = t0 + 1;
+    } else {
+        time0Input.value = Math.max(0, tf - 1);
+    }
+}
+time0Input.addEventListener("input", () => syncTimeWindow("time0"));
+timefInput.addEventListener("input", () => syncTimeWindow("timef"));
+
+
 // Core calculation and plotting function
 function updatePlots() {
 
@@ -298,13 +318,14 @@ function updatePlots() {
 
 
     const tt = [], c1 = [], c3 = [], tt_RWA = [], c1_RWA = [], c3_RWA = [];
-    let ii = res[0].length;
 
-
-    for(let i = 0; i < ii; i++) {
+    // res (NRW) and resII (RWA) are two independent adaptive-step integrations with different number of steps
+    for (let i = 0; i < res[0].length; i++) {
         tt.push(res[0][i] * fsperau);
         c1.push(res[1][0][i]**2 + res[1][1][i]**2);
         c3.push(res[1][4][i]**2 + res[1][5][i]**2);
+    }
+    for (let i = 0; i < resII[0].length; i++) {
         tt_RWA.push(resII[0][i] * fsperau);
         c1_RWA.push(resII[1][0][i]**2 + resII[1][1][i]**2);
         c3_RWA.push(resII[1][4][i]**2 + resII[1][5][i]**2);
@@ -708,8 +729,8 @@ function population_calculations_NRW(test) {
         ];
     }
     function f(t, x) {
-        let OmegaS = -(test.Os * test.mu23) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.cos(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.cos(test.beta)) * Math.cos(test.ws * t);
-        let OmegaP = -(test.Op * test.mu12) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.sin(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.sin(test.beta)) * Math.cos(test.wp * t);
+        let OmegaS = -(test.Os * test.mu23) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.cos(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.cos(test.beta)) * Math.cos(test.ws * (t-test.t0));
+        let OmegaP = -(test.Op * test.mu12) * (Gaussion_Creation_P(t, test.tp, test.gp) * Math.sin(test.alpha) + Gaussion_Creation_S(t, test.ts, test.gs) * Math.sin(test.beta)) * Math.cos(test.wp * (t-test.t0));
         return F(x, OmegaS, OmegaP);
     }
     let x0 = [Math.cos(test.alpha), 0, 0, 0, Math.sin(test.alpha), 0];
